@@ -46,6 +46,13 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --font-oswald-bold: var(--font-oswald-bold);
+  --font-oswald-medium: var(--fonts-oswald-medium);
+  --font-oswald-regular: var(--fonts-oswald-regular);
+  --font-poppins-regular: var(--fonts-poppins-regular);
+  --font-poppins-medium: var(--fonts-poppins-medium);
+  --font-poppins-extralightitalic: var(--fonts-poppins-extralightitalic);
+  --font-jockeyone-regular: var(--fonts-jockeyone-regular);
 }
 
 :root {
