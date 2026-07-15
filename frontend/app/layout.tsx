@@ -43,6 +43,12 @@ export const jockeyOneRegular = localFont({
   display: "swap",
 });
 
+export const ppEditorialNew = localFont({
+  src: "./fonts/PPEditorialNew-Italic.otf",
+  variable: "--font-ppeditorialnew-italic",
+  display: "swap",
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -59,6 +65,7 @@ export default function RootLayout({
         ${poppinsMedium.variable}
         ${poppinsExtraLightItalic.variable}
         ${jockeyOneRegular.variable}
+        ${ppEditorialNew.variable}
         h-full antialiased
       `}
     >
