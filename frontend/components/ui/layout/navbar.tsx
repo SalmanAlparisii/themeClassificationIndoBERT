@@ -19,7 +19,7 @@ function Navbar() {
   ];
 
   return (
-    <header className="bg-white border-2 border-black rounded-xl mx-8 my-2">
+    <header className="bg-white rounded-xl mx-8 my-2">
       <div className={`flex items-center h-[60px] lg:justify-start justify-between w-full ${jockeyOneRegular.className}`}>
         <div className="flex items-center flex-shrink-0">
           <Image
