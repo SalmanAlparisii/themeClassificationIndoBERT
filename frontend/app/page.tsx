@@ -1,5 +1,5 @@
 import Navbar from "@/components/ui/layout/navbar";
-import Image from "next/image";
+import BackgroundSection from "@/components/backgroundSection";
 import VinylPlayer from "@/components/vinylPlayer";
 import { jockeyOneRegular, oswaldMedium } from "./layout";
 import { poppinsRegular } from "./layout";
@@ -55,6 +55,7 @@ export default function Home() {
           </div>
         </div>
       </div>
+      <BackgroundSection></BackgroundSection>
     </div>
   );
 }
