@@ -5,6 +5,7 @@ import { jockeyOneRegular, oswaldMedium } from "./layout";
 import { poppinsRegular } from "./layout";
 import { poppinsMedium } from "./layout";
 import { poppinsExtraLightItalic } from "./layout";
+import ResearchSection from "@/components/researchSection";
 
 export default function Home() {
   return (
@@ -56,6 +57,7 @@ export default function Home() {
         </div>
       </div>
       <BackgroundSection></BackgroundSection>
+      <ResearchSection></ResearchSection>
     </div>
   );
 }

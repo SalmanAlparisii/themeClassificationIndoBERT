@@ -186,12 +186,12 @@ export default function BackgroundSection() {
       className="relative z-10 mx-4 md:mx-8 mt-10 md:mt-16 mb-10 md:mb-16"
     >
       <h2
-        className={`${jockeyOneRegular.className} text-6xl sm:text-8xl md:text-9xl lg:text-10xl text-black text-center mb-10 md:mb-14`}
+        className={`${jockeyOneRegular.className} text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-black text-center mb-10 md:mb-14`}
       >
         Background
       </h2>
 
-      <div className="relative p-5">
+      <div className="relative pt-10">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-2xl"
@@ -451,6 +451,7 @@ export default function BackgroundSection() {
                 </div>
               );
             })}
+            <div className="h-64 sm:h-48 md:h-40" aria-hidden="true" />
           </div>
         </div>
       </div>
