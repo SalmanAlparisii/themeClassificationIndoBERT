@@ -6,6 +6,7 @@ import { poppinsRegular } from "./layout";
 import { poppinsMedium } from "./layout";
 import { poppinsExtraLightItalic } from "./layout";
 import ResearchSection from "@/components/researchSection";
+import DatasetSection from "@/components/datasetSection";
 
 export default function Home() {
   return (
@@ -58,6 +59,7 @@ export default function Home() {
       </div>
       <BackgroundSection></BackgroundSection>
       <ResearchSection></ResearchSection>
+      <DatasetSection></DatasetSection>
     </div>
   );
 }

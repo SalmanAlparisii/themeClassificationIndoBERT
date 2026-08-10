@@ -57,7 +57,7 @@ function renderWithCitationHighlight(text: string) {
   const parts = text.split(CITATION_PATTERN);
   return parts.map((part, i) =>
     i % 2 === 1 ? (
-      <span key={i} className="relative inline-block px-0.5">
+      <span key={i} className="relative inline-block px-0.5 rounded-lg p-1">
         <span className="absolute inset-x-0 inset-y-[12%] bg-red-500/25 rounded-sm -z-10" />
         {part}
       </span>
@@ -66,6 +66,13 @@ function renderWithCitationHighlight(text: string) {
     )
   );
 }
+
+const DIAGONAL_BANDS: { color: string; bordered?: boolean }[] = [
+  { color: "#0a0a0a" },
+  { color: "#7C2121" },
+  { color: "#6D84D7" },
+  { color: "#ffffff", bordered: true },
+];
 
 export default function BackgroundSection() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -186,7 +193,7 @@ export default function BackgroundSection() {
       className="relative z-10 mx-4 md:mx-8 mt-10 md:mt-16 mb-10 md:mb-16"
     >
       <h2
-        className={`${jockeyOneRegular.className} text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-black text-center mb-10 md:mb-14`}
+        className={`${jockeyOneRegular.className} text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-black text-center tracking-tight`}
       >
         Background
       </h2>
@@ -194,25 +201,25 @@ export default function BackgroundSection() {
       <div className="relative pt-10">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-2xl"
+          className="pointer-events-none absolute inset-y-0 left-1/2 -z-10 w-screen -translate-x-1/2 overflow-hidden"
         >
-          <svg className="absolute inset-0 h-full w-full" style={{ overflow: "visible" }}>
-            <defs>
-              <pattern id="studio-grid" width="90" height="90" patternUnits="userSpaceOnUse">
-                <path
-                  d="M 90 0 L 0 0 0 90"
-                  fill="none"
-                  stroke="#201F1F"
-                  strokeWidth="1"
+          <div className="absolute left-1/2 top-1/2 w-[160%] -translate-x-1/2 -translate-y-1/2 -rotate-[12deg]">
+            <div className="flex flex-col">
+              {DIAGONAL_BANDS.map((band, i) => (
+                <div
+                  key={i}
+                  className="h-16 w-full md:h-24"
+                  style={{
+                    backgroundColor: band.color,
+                    borderTop: band.bordered ? "2px solid #000" : undefined,
+                    borderBottom: band.bordered ? "2px solid #000" : undefined,
+                  }}
                 />
-                <path d="M 4 0 L -4 0" stroke="#D4D4D4" strokeWidth="1" />
-                <path d="M 0 4 L 0 -4" stroke="#D4D4D4" strokeWidth="1" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#studio-grid)" opacity={0.5} />
-          </svg>
+              ))}
+            </div>
+          </div>
 
-          <div className="absolute left-1 top-1/2 -translate-y-1/2 hidden md:flex flex-col items-start gap-1">
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 hidden md:flex flex-col items-start gap-1">
             {Array.from({ length: 14 }).map((_, i) => (
               <span
                 key={i}
@@ -241,36 +248,110 @@ export default function BackgroundSection() {
         </div>
 
         <div className="flex flex-col items-center mb-10 md:mb-14">
-          <div className="flex items-center gap-3 border-2 border-white rounded-xl bg-black px-4 py-3">
-            {backgroundItems.map((item, i) => (
-              <button
-                key={item.id}
-                type="button"
-                aria-label={`Fokus ke ${item.title}`}
-                onClick={() =>
-                  cardRefs.current[i]?.scrollIntoView({
-                    behavior: "smooth",
-                    block: "center",
-                  })
-                }
-                ref={(el) => {
-                  patchJackRefs.current[i] = el;
-                }}
-                className={`w-3 h-3 rounded-full border-2 transition-colors duration-500 cursor-pointer ${
-                  i === activeIndex
-                    ? "border-red-500 bg-red-500"
-                    : "border-white bg-black hover:border-red-400"
-                }`}
-              />
-            ))}
+          <div className="relative flex items-center gap-3 sm:gap-4 rounded-xl border-2 border-white/80 bg-gradient-to-b from-zinc-800 to-zinc-950 px-4 sm:px-5 py-3">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 rounded-xl opacity-[0.06]"
+              style={{
+                backgroundImage:
+                  "repeating-linear-gradient(90deg, #fff 0px, #fff 1px, transparent 1px, transparent 3px)",
+              }}
+            />
 
-            <div className="w-px h-4 bg-white/20 mx-1" />
+            <div className="relative z-10 flex items-center gap-2 sm:gap-2.5">
+              {backgroundItems.map((item, i) => {
+                const isActive = i === activeIndex;
+                return isActive ? (
+                  <button
+                    key={item.id}
+                    type="button"
+                    aria-label={`Fokus ke ${item.title}`}
+                    onClick={() =>
+                      cardRefs.current[i]?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center",
+                      })
+                    }
+                    ref={(el) => {
+                      patchJackRefs.current[i] = el;
+                    }}
+                    className="relative flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border-2 border-red-500 bg-black shadow-[0_0_10px_rgba(239,68,68,0.5)] cursor-pointer"
+                  >
+                    <span className="h-3.5 w-3.5 rounded-full border border-red-400 bg-zinc-900" />
+                    <span className="absolute inset-0 rounded-full border border-red-500/40 animate-ping" />
+                  </button>
+                ) : (
+                  <button
+                    key={item.id}
+                    type="button"
+                    aria-label={`Fokus ke ${item.title}`}
+                    onClick={() =>
+                      cardRefs.current[i]?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center",
+                      })
+                    }
+                    ref={(el) => {
+                      patchJackRefs.current[i] = el;
+                    }}
+                    className="relative flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full border border-white/40 bg-zinc-900 cursor-pointer transition-colors duration-300 hover:border-white/70"
+                  >
+                    <span className="h-0.5 w-2 rotate-45 rounded-full bg-white/50" />
+                  </button>
+                );
+              })}
+            </div>
 
+            <div className="w-px h-6 bg-white/20" />
+
+            <div className="hidden sm:flex items-center gap-3" aria-hidden="true">
+              <div className="flex flex-col items-center gap-1">
+                <span
+                  className={`${oswaldMedium.className} text-[7px] uppercase tracking-wide text-white/40`}
+                >
+                  Line/Inst
+                </span>
+                <span className="flex h-3 w-6 items-center rounded-full border border-white/30 bg-zinc-800 px-0.5">
+                  <span className="h-2 w-2 rounded-full bg-white/50" />
+                </span>
+              </div>
+              <div className="flex flex-col items-center gap-1">
+                <span
+                  className={`${oswaldMedium.className} text-[7px] uppercase tracking-wide text-white/40`}
+                >
+                  Pad
+                </span>
+                <span className="flex h-3 w-6 items-center justify-end rounded-full border border-white/30 bg-zinc-800 px-0.5">
+                  <span className="h-2 w-2 rounded-full bg-red-500/70" />
+                </span>
+              </div>
+            </div>
+
+            <div className="hidden sm:block w-px h-6 bg-white/20" aria-hidden="true" />
+
+            {/* Decorative CLIP / SIG LEDs */}
+            <div className="hidden md:flex flex-col items-center gap-1" aria-hidden="true">
+              <span className="h-1.5 w-1.5 rounded-full bg-red-500/60" />
+              <span className="h-1.5 w-1.5 rounded-full bg-green-400/70" />
+            </div>
+
+            <div className="hidden md:flex flex-col items-center gap-1" aria-hidden="true">
+              <span
+                className={`${oswaldMedium.className} text-[7px] uppercase tracking-wide text-white/40`}
+              >
+                Gain
+              </span>
+              <span className="relative h-4 w-4 rounded-full border border-white/40 bg-zinc-800">
+                <span className="absolute left-1/2 top-0 h-1.5 w-px -translate-x-1/2 bg-white/60" />
+              </span>
+            </div>
+
+            <div className="w-px h-6 bg-white/20" />
             <button
               type="button"
               onClick={() => setVoiceEnabled((prev) => !prev)}
               aria-pressed={voiceEnabled}
-              className={`flex items-center gap-1.5 rounded-full border-2 px-2.5 py-1 transition-colors duration-300 cursor-pointer ${
+              className={`relative z-10 flex items-center gap-1.5 rounded-full border-2 px-2.5 py-1 transition-colors duration-300 cursor-pointer ${
                 voiceEnabled
                   ? "border-red-500 bg-red-500/10"
                   : "border-white/40 bg-black hover:border-white"
@@ -289,11 +370,22 @@ export default function BackgroundSection() {
                 {voiceEnabled ? "Voice On" : "Voice Off"}
               </span>
             </button>
+
+            <div className="hidden lg:flex flex-col items-center gap-1" aria-hidden="true">
+              <span
+                className={`${oswaldMedium.className} text-[7px] uppercase tracking-wide text-white/40`}
+              >
+                Reverb
+              </span>
+              <span className="relative h-5 w-5 rounded-full border-2 border-white/50 bg-zinc-800">
+                <span className="absolute left-1/2 top-0 h-2 w-px -translate-x-1/2 bg-white/70" />
+              </span>
+            </div>
           </div>
           <span
             className={`${oswaldMedium.className} text-[10px] uppercase tracking-wide text-black/50 mt-2`}
           >
-            Patch panel
+            Audio Interface
           </span>
         </div>
 
@@ -451,8 +543,7 @@ export default function BackgroundSection() {
                 </div>
               );
             })}
-            <div className="h-64 sm:h-48 md:h-40" aria-hidden="true" />
-          </div>
+          <div className="h-32 sm:h-24 md:h-16" aria-hidden="true" /></div>
         </div>
       </div>
     </section>
