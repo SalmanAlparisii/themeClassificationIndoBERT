@@ -37,8 +37,8 @@ export default function Home() {
           <h1 className={`${oswaldMedium.className} text-lg sm:text-2xl md:text-2xl lg:text-3xl font-bold text-center lg:mb-2`}>
             Dont Forget to Try
           </h1>
-          <div className="rounded-3xl lg:rounded-4xl bg-black text-white text-center cursor-pointer border-black hover:bg-red-500 hover:transition-all hover:text-white hover:shadow-lg">
-            <button className={`${jockeyOneRegular.className} text-base sm:text-xl md:text-xl lg:text-2xl font-bold px-4 py-1.5 lg:px-5 lg:py-3 cursor-pointer`}>
+          <div className="rounded-3xl lg:rounded-4xl bg-black text-white text-center cursor-pointer border-black hover:bg-red-500 hover:transition-all hover:text-white hover:shadow-lg mt-1.5">
+            <button className={`${jockeyOneRegular.className} text-base sm:text-xl md:text-xl lg:text-2xl font-bold px-6 py-2 lg:px-8 lg:py-3 cursor-pointer`} onClick={"bg-black text-white text-center cursor-pointer border-black hover:bg-red-500 hover:transition-all hover:text-white"}>
               Start Now
             </button>
           </div>
@@ -63,3 +63,4 @@ export default function Home() {
     </div>
   );
 }
+

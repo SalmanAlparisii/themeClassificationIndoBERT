@@ -193,7 +193,7 @@ export default function BackgroundSection() {
       className="relative z-10 mx-4 md:mx-8 mt-10 md:mt-16 mb-10 md:mb-16"
     >
       <h2
-        className={`${jockeyOneRegular.className} text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-black text-center tracking-tight`}
+        className={`${jockeyOneRegular.className} text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-black text-center tracking-tight`}
       >
         Background
       </h2>

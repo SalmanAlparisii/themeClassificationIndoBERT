@@ -214,7 +214,7 @@ function ResearchAccordion() {
           onToggle={() => toggle(section.id)}
         >
           {section.id === "gap" && (
-            <p className={`${poppinsRegular.className} mx-auto text-center text-[14px] text-black/80 md:text-base mb-2 lg:text-lg`}>
+            <p className={`${poppinsRegular.className} mx-auto text-center text-[14px] text-black/80 md:text-base mb-2 lg:text-base`}>
               Penelitian klasifikasi lirik lagu selama ini masih berfokus
               pada analisis sentimen atau genre, sementara pengelompokan
               berdasarkan tema eksplisit cinta, keadilan sosial, dan
@@ -225,7 +225,7 @@ function ResearchAccordion() {
           )}
 
           {section.id === "indobert" && (
-            <p className={`${poppinsRegular.className} mx-auto text-center text-[14px] text-black/80 md:text-base mb-2 lg:text-lg`}>
+            <p className={`${poppinsRegular.className} mx-auto text-center text-[14px] text-black/80 md:text-base mb-2 lg:text-base`}>
               IndoBERT dipilih karena mampu memahami konteks bahasa Indonesia
               secara dua arah, menangkap makna implisit yang tidak dapat
               ditangkap model tradisional seperti Naïve Bayes atau TWCNB,
@@ -235,7 +235,7 @@ function ResearchAccordion() {
           )}
 
           {section.id === "theme" && (
-            <p className={`${poppinsRegular.className} mx-auto text-center text-[14px] text-black/80 md:text-base mb-2 lg:text-lg`}>
+            <p className={`${poppinsRegular.className} mx-auto text-center text-[14px] text-black/80 md:text-base mb-2 lg:text-base`}>
               Salah satu pendekatan yang relevan adalah klasifikasi tema
               lirik lagu karena pengguna tidak hanya mencari musik
               berdasarkan genre, tetapi juga berdasarkan makna dan tema
@@ -292,7 +292,7 @@ export default function ResearchPage() {
       <div className="relative -mt-2 min-h-screen overflow-hidden bg-[#111111] px-4 pb-8 pt-0 md:-mt-4 md:px-8 md:pb-12 md:pt-0">
         <StudioBackground />
         <h1
-          className={`${jockeyOneRegular.className} mt-6 mb-2 text-center text-[40px] font-black text-white sm:mt-8 sm:mb-2 md:mt-10 md:mb-2 md:text-5xl lg:mt-12 lg:mb-4 lg:text-6xl`}
+          className={`${jockeyOneRegular.className} mt-6 mb-2 text-center text-5xl font-black text-white sm:mt-8 sm:mb-2 md:mt-10 md:mb-2 md:text-6xl lg:mt-12 lg:mb-4 lg:text-[72px]`}
         >
           Research
         </h1>
