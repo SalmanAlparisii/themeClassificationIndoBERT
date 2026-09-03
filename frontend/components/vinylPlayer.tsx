@@ -2,6 +2,8 @@
 
 import { oswaldBold, oswaldMedium, poppinsMedium, poppinsRegular } from "@/app/layout";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+
 
 type Track = {
   title: string;
@@ -23,30 +25,45 @@ export default function VinylPlayer({
     label: "Importance",
     quote: "Less search focused from themes",
     note: "right now people often search song from theme",
-    date: "Oct. 2024",
+    date: "Mic, 2024",
+    citationTitle: "Two Stages Song Subject Classification on Indonesian Song Based on Lyrics, Genre & Artist",
+    authors: "Aziz, R., Bijaksana, M., & Adiwijaya, K",
+    publication: "2019 7th International Conference on Information and Communication Technology (ICoICT), 1-6",
+    doi: "https://doi.org/10.1109/ICoICT.2019.8835232",
+    explanation: "33,4% dan 17,9% dari 427 pendengar musik sering mencari lagu berdasarkan tema atau subjek utama yang diangkat dalam lirik. Hal ini menunjukkan bahwa dalam proses mendengarkan maupun pencarian musik, pengguna juga mempertimbangkan konteks makna dan pesan yang ada pada lirik lagu bukan hanya melodi atau ritme.",
   },
   researchGap = {
     value: "0",
     label: "Research Gap",
     quote: "Mostly",
     note: "Less search focused from themes Meaning right now people",
-    date: "Oct. 2024",
+    date: "Daniel, 2024",
+    citationTitle: "Two Stages Song Subject Classification on Indonesian Song Based on Lyrics, Genre & Artist",
+    authors: "Aziz, R., Bijaksana, M., & Adiwijaya, K",
+    publication: "2019 7th International Conference on Information and Communication Technology (ICoICT), 1-6",
+    doi: "https://doi.org/10.1109/ICoICT.2019.8835232",
+    explanation: "33,4% dan 17,9% dari 427 pendengar musik sering mencari lagu berdasarkan tema atau subjek utama yang diangkat dalam lirik. Hal ini menunjukkan bahwa dalam proses mendengarkan maupun pencarian musik, pengguna juga mempertimbangkan konteks makna dan pesan yang ada pada lirik lagu bukan hanya melodi atau ritme.",
   },
   className = "",
 }: {
-  importance?: { value: string; label: string; quote?: string; note?: string; date?: string };
-  researchGap?: { value: string; label: string; quote?: string; note?: string; date?: string };
+  importance?: { value: string; label: string; quote?: string; note?: string; date?: string; citationTitle?: string; authors?: string; publication?:string; doi?: string; explanation?: string;};
+  researchGap?: { value: string; label: string; quote?: string; note?: string; date?: string; citationTitle?: string; authors?: string; publication?:string; doi?: string; explanation?: string;};
   className?: string;
 }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const objectUrlRef = useRef<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [popupIndex, setPopupIndex] = useState<number | null>(null);
+
+  type detailKey = "importance" | "researchGap" | null;
+  const [activeDetail, setActiveDetail] = useState<detailKey>(null);
 
   const [tracks, setTracks] = useState<Track[]>(DEFAULT_TRACKS);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(70);
   const [armActive, setArmActive] = useState(false);
+  
 
   const current = tracks[currentIndex];
 
@@ -59,6 +76,15 @@ export default function VinylPlayer({
       if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    document.body.style.overflow =
+      activeDetail !== null ? "hidden" : "";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [activeDetail]);
 
   const playTrack = (index: number) => {
     setCurrentIndex(index);
@@ -218,42 +244,6 @@ export default function VinylPlayer({
             </button>
           </div>
         </div>
-
-         <div className="grid grid-cols-2 border-t-2 border-black">
-          <div className="bg-[#7C2121] text-white flex flex-col text-center">
-            <div className="bg-black px-2 py-1">
-              <p className={`text-sm leading-tight ${oswaldMedium.className}`}>{importance.label}</p>
-            </div>
-            <div className="flex flex-col items-center gap-1 px-2 pt-2 pb-2">
-              <p className={`text-2xl leading-none ${oswaldBold.className}`}>{importance.value}%</p>
-              {(importance.quote || importance.note) && (
-                <p className={`mt-1 text-[10px] leading-snug ${poppinsRegular.className}`}>
-                  {importance.quote} {importance.note}
-                  <span className={`ml-1 inline-block rounded bg-[#6D84D7] px-1.5 py-0.5 text-[8px] leading-none align-middle ${poppinsRegular.className}`}>
-                    {importance.date}
-                  </span>
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="bg-[#6D84D7] text-white flex flex-col text-center border-l-2 border-black">
-            <div className="bg-white px-2 py-1">
-              <p className={`text-sm leading-tight text-black ${oswaldMedium.className}`}>{researchGap.label}</p>
-            </div>
-            <div className="flex flex-col items-center gap-1 px-2 pt-2 pb-2">
-              <p className={`text-2xl leading-none ${oswaldBold.className}`}>{researchGap.value}%</p>
-              {(researchGap.quote || researchGap.note) && (
-                <p className={`mt-1 text-[10px] leading-snug ${poppinsRegular.className}`}>
-                  {researchGap.quote} {researchGap.note}
-                  <span className={`ml-1 inline-block rounded bg-[#7C2121] px-1.5 py-0.5 text-[8px] leading-none align-middle ${poppinsRegular.className}`}>
-                    {researchGap.date}
-                  </span>
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
       </div> 
 
       <div className="hidden sm:flex sm:flex-col items-center lg:items-end mx-4 lg:mx-0">
@@ -285,24 +275,143 @@ export default function VinylPlayer({
 
         <div className="relative w-[500px] md:w-[500px] lg:w-[500px] max-w-full">
           <div className="relative rounded-t-2xl border-2 border-black bg-[#F5F5F5] p-2 overflow-visible">
-            <div className="relative">
-              <button
-                type="button"
-                onClick={handleUploadClick}
-                className={`rounded-full border-2 border-black bg-white px-3 md:px-4 py-1 text-sm md:text-md font-semibold cursor-pointer hover:bg-black hover:text-white active:bg-black active:text-white transition ${poppinsRegular.className}`}
+            <div
+              className="absolute right-2 top-0 z-30"
+              style={{
+                width: "300px",
+                height: "280px",
+              }}
+            >
+              <div
+                className="absolute right-5 top-2 z-10"
+                style={{
+                  width: "46px",
+                  height: "46px",
+                }}
               >
-                Upload
-              </button>
+                <img
+                  src="/rectangleStylus.svg"
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 h-full w-full"
+                />
+              </div>
 
-              <button type="button" onClick={handleTonearmClick} aria-label="Play random song" className="absolute right-2 top-0 z-30 h-0 w-0">
-                <div className="relative">
-                  <div className="absolute right-0 top-0 h-4 w-4 md:h-5 md:w-5 rounded-full border-2 border-black bg-[#c9c9c9]" />
-                  <div
-                    className="absolute right-[7px] top-[12px] md:right-[8px] md:top-[14px] h-12 md:h-16 w-[4px] md:w-[5px] origin-top rounded-full border border-black bg-[#c9c9c9] transition-transform duration-500"
-                    style={{ transform: armActive ? "rotate(-28deg)" : "rotate(-2deg)" }}
+              <div
+                className="absolute inset-0 z-20"
+                style={{
+                  transformOrigin: "257px 31px",
+                  transform: armActive ? "rotate(0deg)" : "rotate(-24deg)",
+                  transition:
+                    "transform 700ms cubic-bezier(0.22, 1, 0.36, 1)",
+                }}
+              >
+                <svg
+                  viewBox="0 0 300 280"
+                  className="absolute inset-0 h-full w-full overflow-visible"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="
+                      M 257 31
+                      C 248 61, 240 86, 231 112
+                      C 222 139, 208 164, 187 177
+                      C 170 188, 151 195, 131 210
+                    "
+                    fill="none"
+                    stroke="#111111"
+                    strokeWidth="13"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   />
-                </div>
-              </button>
+
+                  <path
+                    d="
+                      M 257 31
+                      C 248 61, 240 86, 231 112
+                      C 222 139, 208 164, 187 177
+                      C 170 188, 151 195, 131 210
+                    "
+                    fill="none"
+                    stroke="#E5E5E5"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+
+                  <rect
+                    x="245"
+                    y="39"
+                    width="23"
+                    height="15"
+                    rx="5"
+                    fill="#222"
+                    transform="rotate(16 256 46)"
+                  />
+
+                  <rect
+                    x="123"
+                    y="203"
+                    width="27"
+                    height="14"
+                    rx="5"
+                    fill="#222"
+                    transform="rotate(-25 136 210)"
+                  />
+
+                  <g transform="translate(95 207) rotate(-25)">
+                    <path
+                      d="
+                        M 0 5
+                        Q 4 0 12 0
+                        L 48 0
+                        Q 55 0 59 6
+                        L 64 18
+                        Q 65 24 58 27
+                        L 12 27
+                        Q 4 27 1 21
+                        Z
+                      "
+                      fill="#222"
+                      stroke="#000"
+                      strokeWidth="2"
+                    />
+
+                    <rect
+                      x="16"
+                      y="4"
+                      width="25"
+                      height="5"
+                      rx="2"
+                      fill="#666"
+                    />
+
+                    <circle cx="17" cy="17" r="2.5" fill="#aaa" />
+                    <circle cx="27" cy="17" r="2.5" fill="#aaa" />
+
+                    <path
+                      d="M 56 18 L 68 24 L 64 29 L 53 23 Z"
+                      fill="#555"
+                      stroke="#000"
+                      strokeWidth="1.5"
+                    />
+
+                    <path
+                      d="M 67 24 L 74 34"
+                      stroke="#111"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                    />
+
+                    <circle
+                      cx="75"
+                      cy="35"
+                      r="2"
+                      fill="#111"
+                    />
+                  </g>
+                </svg>
+              </div>
             </div>
 
             <div className="relative flex justify-center items-center h-[210px] md:h-[250px] lg:h-[290px]">
@@ -370,9 +479,9 @@ export default function VinylPlayer({
                   <div className="mt-1 sm:mt-1 md:mt-1 lg:mt-2 pt-1 md:pt-2 lg:pt-3">
                     <p className={`text-left text-[11px] md:text-[12px] leading-relaxed ${poppinsRegular.className}`}>
                       {importance.quote} {importance.note}
-                      <span className={`ml-2 inline-block rounded-lg bg-[#6D84D7] px-3 py-1 text-[13px] md:text-[14px] leading-none align-middle shadow-2xl ${poppinsRegular.className}`}>
+                      <button className={`inline-block rounded-lg bg-[#6D84D7] px-3 py-1 ml-1 text-[13px] md:text-[14px] leading-none align-middle shadow-2xl transition-all duration-200 ease-out hover:-translate-y-0.5 cursor-pointer hover:shadow-4xl border-2 border-transparent hover:border-white ${poppinsRegular.className}`} onClick={() => setActiveDetail("importance")}>
                         {importance.date}
-                      </span>
+                      </button>
                     </p>
                   </div>
                 )}
@@ -391,9 +500,9 @@ export default function VinylPlayer({
                   <div className="mt-1 sm:mt-1 md:mt-1 lg:mt-2 pt-1 md:pt-2 lg:pt-3">
                     <p className={`text-left text-[11px] md:text-[12px] leading-relaxed ${poppinsRegular.className}`}>
                       {researchGap.quote} {researchGap.note}
-                      <span className={`inline-block rounded-lg bg-[#7C2121] px-3 py-1 text-[13px] md:text-[14px] leading-none align-middle shadow-2xl ${poppinsRegular.className}`}>
+                      <button className={`inline-block rounded-lg bg-[#7C2121] px-3 py-1 text-[13px] md:text-[14px] leading-none align-middle shadow-2xl transition-all duration-200 ease-out hover:-translate-y-0.5 cursor-pointer hover:shadow-4xl border-2 border-transparent hover:border-white ${poppinsRegular.className}`} onClick={() => setActiveDetail("researchGap")}>
                         {researchGap.date}
-                      </span>
+                      </button>
                     </p>
                   </div>
                 )}
@@ -405,7 +514,7 @@ export default function VinylPlayer({
 
       <style jsx>{`
         @keyframes vinylSpin {
-          from { transform: rotate(0deg); }
+          from { transform: rotate(-30deg); }
           to { transform: rotate(360deg); }
         }
         @keyframes vinylEq {
@@ -413,6 +522,103 @@ export default function VinylPlayer({
           50% { height: 14px; }
         }
       `}</style>
+
+      {activeDetail != null &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 p-4"
+            onClick={() => setActiveDetail(null)}
+          >
+            <div
+              className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+            <button
+              type="button"
+              aria-label="Tutup"
+              onClick={() => setActiveDetail(null)}
+              className="group absolute right-4 top-4 h-8 w-8 cursor-pointer"
+            >
+              <img
+                src="/popupButtonOff.svg"
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 h-full w-full select-none transition-opacity duration-200 ease-out group-hover:opacity-0"
+              />
+              <img
+                src="/popupButtonOn.svg"
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 h-full w-full select-none opacity-0 transition-opacity duration-200 ease-out group-hover:opacity-100"
+              />
+            </button>
+
+            {(() => {
+              const detail = activeDetail === "importance" || "researchGap" ? importance : researchGap;
+              return (
+                <>
+                  <h3 className={`${poppinsMedium.className} pr-8 text-xl leading-snug text-black font-bold text-center`}>
+                    {detail.citationTitle}
+                  </h3>
+
+                  <p className={`${poppinsRegular.className} mt-3 text-lg text-black/80 text-center`}>
+                    {detail.authors}
+                  </p>
+
+                  <p className={`${poppinsRegular.className} mt-1 text-base text-black/60 text-center`}>
+                    {detail.publication}
+                  </p>
+
+                  {detail.doi && (
+                    <a
+                      href={detail.doi}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`${poppinsRegular.className} mt-1 block text-base text-blue-600 underline break-all text-center`}
+                    >
+                      {detail.doi}
+                    </a>
+                  )}
+
+                  {detail.explanation && (
+                    <div className="relative mt-6 overflow-visible rounded-xl bg-[#F5F5F5] p-4 pt-6 border-2 border-black">
+                      <img
+                        src="/quotationMark.svg"
+                        alt=""
+                        aria-hidden="true"
+                        className="pointer-events-none absolute -left-3 -top-3 h-8 w-8 select-none"
+                      />
+                      <img
+                        src="/quotationMark.svg"
+                        alt=""
+                        aria-hidden="true"
+                        className="pointer-events-none absolute left-3 -top-3 h-8 w-8 select-none"
+                      />
+                      <p className={`${poppinsRegular.className} text-sm leading-relaxed text-black/80 text-center`}>
+                        {detail.explanation}
+                      </p>
+                      <img
+                        src="/quotationMark.svg"
+                        alt=""
+                        aria-hidden="true"
+                        className="pointer-events-none absolute -bottom-3 -right-3 h-8 w-8 rotate-180 select-none"
+                      />
+                      <img
+                        src="/quotationMark.svg"
+                        alt=""
+                        aria-hidden="true"
+                        className="pointer-events-none absolute -bottom-3 right-3 h-8 w-8 rotate-180 select-none"
+                      />
+                    </div>
+                  )}
+                </>
+              );
+            })()}
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }

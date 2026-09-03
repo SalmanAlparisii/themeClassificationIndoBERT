@@ -483,7 +483,7 @@ export default function DatasetSection() {
           <TapeLabelStrip data={unbalancedData} dark />
         </section>
 
-                <div className="mt-3 md:mt-6 lg:flex lg:items-stretch lg:gap-x-10">
+        <div className="mt-3 md:mt-6 lg:flex lg:items-stretch lg:gap-x-10">
           <div className="lg:min-w-0 lg:flex-1">
             <section aria-label="Data process tape path">
               <div className="mb-5 flex items-center gap-2">
@@ -694,7 +694,7 @@ export default function DatasetSection() {
           </section>
         </div>
       </div>
-            {popupIndex !== null && (
+      {popupIndex !== null && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-[2px]"
           role="dialog"
