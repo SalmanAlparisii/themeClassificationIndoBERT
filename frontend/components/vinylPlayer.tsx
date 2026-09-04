@@ -62,8 +62,9 @@ export default function VinylPlayer({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(70);
+  const [volumeRotation, setVolumeRotation] = useState(0);
   const [armActive, setArmActive] = useState(false);
-  
+
 
   const current = tracks[currentIndex];
 
@@ -77,12 +78,21 @@ export default function VinylPlayer({
     };
   }, []);
 
+  // Kunci scroll body saat popup terbuka, sambil kompensasi lebar scrollbar
+  // supaya halaman tidak "melebar/menyempit" (mencegah tampilan terasa "berubah").
   useEffect(() => {
-    document.body.style.overflow =
-      activeDetail !== null ? "hidden" : "";
+    if (activeDetail !== null) {
+      const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.overflow = "hidden";
+      document.body.style.paddingRight = `${scrollBarWidth}px`;
+    } else {
+      document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
+    }
 
     return () => {
       document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
     };
   }, [activeDetail]);
 
@@ -116,6 +126,16 @@ export default function VinylPlayer({
 
   const adjustVolume = (delta: number) => {
     setVolume((v) => Math.min(100, Math.max(0, v + delta)));
+
+    setVolumeRotation((r) => {
+      const next = r + (delta > 0 ? 18 : -18);
+
+      // batasi supaya terasa seperti knob asli
+      if (next > 135) return 135;
+      if (next < -135) return -135;
+
+      return next;
+    });
   };
 
   const handleUploadClick = () => fileInputRef.current?.click();
@@ -150,7 +170,7 @@ export default function VinylPlayer({
   };
 
   return (
-    <div className={className}>
+    <div className={`overflow-x-hidden ${className}`}>
       <input ref={fileInputRef} type="file" accept="audio/*" className="hidden" onChange={handleFileChange} />
       <audio
         ref={audioRef}
@@ -211,7 +231,8 @@ export default function VinylPlayer({
             className="relative h-32 w-32 rounded-full shadow-md"
             style={{
               background: "repeating-radial-gradient(circle,#1a1a1a 0px,#1a1a1a 2px,#000 3px,#000 5px)",
-              animation: isPlaying ? "vinylSpin 3s linear infinite" : "none",
+              animation: "vinylSpin 3s linear infinite",
+              animationPlayState: isPlaying ? "running" : "paused",
             }}
           >
             <div className="absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full border border-black bg-[#8a8a8a] flex items-center justify-center">
@@ -244,9 +265,9 @@ export default function VinylPlayer({
             </button>
           </div>
         </div>
-      </div> 
+      </div>
 
-      <div className="hidden sm:flex sm:flex-col items-center lg:items-end mx-4 lg:mx-0">
+      <div className="hidden sm:flex sm:flex-col items-center lg:items-end mx-4 lg:mx-0 min-w-0">
         <div className="relative z-0 flex items-center gap-3 rounded-full border-2 border-black bg-white px-3 py-2 shadow-sm mb-3 w-[220px] md:w-[250px] lg:w-[280px] max-w-full">
           <div className="h-10 w-10 md:h-11 md:w-11 lg:h-12 lg:w-12 shrink-0 overflow-hidden rounded-full border border-black bg-black flex items-center justify-center">
             {current?.cover ? (
@@ -273,7 +294,7 @@ export default function VinylPlayer({
           </div>
         </div>
 
-        <div className="relative w-[500px] md:w-[500px] lg:w-[500px] max-w-full">
+        <div className="relative w-full max-w-[500px]">
           <div className="relative rounded-t-2xl border-2 border-black bg-[#F5F5F5] p-2 overflow-visible">
             <div
               className="absolute right-2 top-0 z-30"
@@ -419,7 +440,8 @@ export default function VinylPlayer({
                 className="relative h-44 w-44 md:h-56 md:w-56 lg:h-68 lg:w-68 rounded-full shadow-md"
                 style={{
                   background: "repeating-radial-gradient(circle,#1a1a1a 0px,#1a1a1a 2px,#000 3px,#000 5px)",
-                  animation: isPlaying ? "vinylSpin 3s linear infinite" : "none",
+                  animation: "vinylSpin 3s linear infinite",
+                  animationPlayState: isPlaying ? "running" : "paused",
                 }}
               >
                 <div className="absolute left-1/2 top-1/2 h-16 w-16 md:h-[72px] md:w-[72px] lg:h-20 lg:w-20 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full border border-black bg-[#8a8a8a] flex items-center justify-center">
@@ -433,34 +455,71 @@ export default function VinylPlayer({
               <div className="flex justify-start">
                 <button
                   onClick={() => adjustVolume(-10)}
-                  className="h-8 w-8 md:h-9 md:w-9 lg:h-10 lg:w-10 rounded-full border-2 border-black bg-gradient-to-b from-[#e6e6e6] to-[#a8a8a8] text-base md:text-lg lg:text-xl font-bold active:scale-95 cursor-pointer hover:shadow-xl"
+                  aria-label="Kurangi volume"
+                  className="relative h-10 w-10 rounded-full border-2 border-black bg-gradient-to-b from-[#eeeeee] to-[#999999] shadow-[0_3px_4px_rgba(0,0,0,0.5)] cursor-pointer active:translate-y-[2px]"
                 >
-                  −
+                  <div
+                    className="absolute left-1/2 top-1/2 h-0 w-0"
+                    style={{ transform: `rotate(${volumeRotation}deg)` }}
+                  >
+                    <span className="absolute left-1/2 bottom-0 h-4 w-[3px] -translate-x-1/2 rounded-full bg-black" />
+                  </div>
+                  <span className="absolute inset-[4px] rounded-full border border-[#777]" />
                 </button>
               </div>
 
               <div className="flex justify-center">
                 <button
+                  type="button"
                   onClick={togglePlay}
                   aria-pressed={isPlaying}
-                  className={`relative h-7 w-14 md:h-7 md:w-15 lg:h-8 lg:w-16 rounded-full border-2 border-black transition cursor-pointer ${
-                    isPlaying ? "bg-red-500" : "bg-gray-300"
-                  }`}
+                  className="relative h-11 w-28 rounded-sm border-2 border-black bg-gradient-to-b from-[#e2e2e2] to-[#b8b8b8] shadow-[0_4px_0_#000] transition-all active:translate-y-[2px] cursor-pointer"
                 >
                   <span
-                    className={`absolute top-1/2 h-5 w-5 md:h-6 md:w-6 -translate-y-1/2 rounded-full border border-black bg-white transition-all ${
-                      isPlaying ? "left-7 md:left-8" : "left-1"
+                    className={`absolute left-2 bottom-2 h-2 w-2 rounded-full border border-black transition-all duration-300 ${
+                      isPlaying
+                        ? "bg-lime-400 shadow-[0_0_6px_2px_rgba(132,255,0,0.8)]"
+                        : "bg-[#2a2a2a]"
                     }`}
                   />
+
+                  <div className="absolute inset-y-[4px] left-[20px] right-[4px] rounded-sm bg-[#0a0a0a] border border-[#222] shadow-inner flex items-center justify-between px-4 overflow-hidden">
+                    <span
+                      className={`text-white font-bold text-lg leading-none transition-all duration-300 ${
+                        isPlaying
+                          ? "opacity-90 -translate-y-[1px] drop-shadow-[0_1px_0_rgba(255,255,255,0.35)]"
+                          : "opacity-40 translate-y-[1px] drop-shadow-[0_-1px_1px_rgba(0,0,0,0.8)]"
+                      }`}
+                    >
+                      −
+                    </span>
+
+                    <span
+                      className={`text-white text-lg leading-none transition-all duration-300 ${
+                        isPlaying
+                          ? "opacity-40 translate-y-[1px] drop-shadow-[0_-1px_1px_rgba(0,0,0,0.8)]"
+                          : "opacity-90 -translate-y-[1px] drop-shadow-[0_1px_0_rgba(255,255,255,0.35)]"
+                      }`}
+                    >
+                      ○
+                    </span>
+                  </div>
                 </button>
               </div>
 
               <div className="flex justify-end">
                 <button
                   onClick={() => adjustVolume(10)}
-                  className="h-8 w-8 md:h-9 md:w-9 lg:h-10 lg:w-10 rounded-full border-2 border-black bg-gradient-to-b from-[#e6e6e6] to-[#a8a8a8] text-base md:text-lg lg:text-xl font-bold active:scale-95 cursor-pointer hover:shadow-xl"
+                  aria-label="Tambah volume"
+                  className="relative h-10 w-10 rounded-full border-2 border-black bg-gradient-to-b from-[#eeeeee] to-[#999999] shadow-[0_3px_4px_rgba(0,0,0,0.5)] cursor-pointer active:translate-y-[2px]"
                 >
-                  +
+                  <div
+                    className="absolute left-1/2 top-1/2 h-0 w-0"
+                    style={{ transform: `rotate(${volumeRotation}deg)` }}
+                  >
+                    <span className="absolute left-1/2 bottom-0 h-4 w-[3px] -translate-x-1/2 rounded-full bg-black" />
+                  </div>
+                  <span className="absolute inset-[4px] rounded-full border border-[#777]" />
                 </button>
               </div>
             </div>
@@ -555,7 +614,7 @@ export default function VinylPlayer({
             </button>
 
             {(() => {
-              const detail = activeDetail === "importance" || "researchGap" ? importance : researchGap;
+              const detail = activeDetail === "importance" ? importance : researchGap;
               return (
                 <>
                   <h3 className={`${poppinsMedium.className} pr-8 text-xl leading-snug text-black font-bold text-center`}>
