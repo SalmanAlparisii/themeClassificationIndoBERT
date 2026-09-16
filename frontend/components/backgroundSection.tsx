@@ -1,549 +1,176 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import {
-  jockeyOneRegular,
-  oswaldMedium,
-  poppinsRegular,
-} from "@/app/layout";
+import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { jockeyOneRegular, oswaldMedium, poppinsRegular } from "@/app/layout";
+import BackgroundCable from "@/components/backgroundCable";
 
-type BackgroundItem = {
-  id: string;
-  step: string;
-  title: string;
-  text: string;
-};
+type BackgroundItem = { id: string; step: string; title: string; text: string; description: string };
 
 const backgroundItems: BackgroundItem[] = [
-  {
-    id: "01",
-    step: "Masalah",
-    title: "Ledakan Musik Digital",
-    text: "Perkembangan musik digital meningkatkan jumlah lagu secara pesat, sehingga pengguna kesulitan menemukan lagu yang sesuai preferensi karena pilihan yang terlalu banyak dan tersebar. Klasifikasi lirik lagu menjadi solusi untuk mengelompokkan lagu berdasarkan karakteristiknya agar pencarian lebih efektif.",
-  },
-  {
-    id: "02",
-    step: "Tantangan",
-    title: "Klasifikasi Tema & Tantangannya",
-    text: "Berbeda dari klasifikasi sentimen (positif/negatif), klasifikasi tema berfokus pada makna utama lirik. Tantangannya, tema sering bersifat implisit, tersebar, dan tumpang tindih antar kalimat, sehingga dibutuhkan pendekatan semantik untuk memahami makna kontekstual dan non-literal dalam lirik.",
-  },
-  {
-    id: "03",
-    step: "Fokus",
-    title: "Tema sebagai Fokus Penelitian",
-    text: "Berdasarkan Du (2024), tiga tema paling dominan dalam lirik lagu adalah cinta, keadilan sosial, dan refleksi diri. Tema ini juga relevan bagi pengguna, terbukti dari data yang menunjukkan pengguna sering mencari musik berdasarkan mood/tema, bukan hanya melodi.",
-  },
-  {
-    id: "04",
-    step: "Keterbatasan",
-    title: "Keterbatasan Metode Sebelumnya",
-    text: "Penelitian sebelumnya menggunakan pendekatan kualitatif manual yang lambat dan tidak konsisten, atau machine learning tradisional seperti Naïve Bayes dan TWCNB yang masih terbatas karena mengasumsikan setiap fitur independen sehingga tidak menangkap hubungan antar kata.",
-  },
-  {
-    id: "05",
-    step: "Solusi",
-    title: "Deep Learning & IndoBERT",
-    text: "Model transformer seperti BERT/IndoBERT mampu memahami konteks bahasa secara dua arah dengan performa lebih tinggi dari metode tradisional (F1-score 84.13 vs Naïve Bayes 70.95 dan LSTM 71.62). Penelitian ini mengembangkan model klasifikasi tema lirik Indonesia menggunakan IndoBERT.",
-  },
+  { id: "01", step: "Masalah", title: "Ledakan Musik Digital", description: "Identifikasi", text: "Perkembangan teknologi informasi dan komunikasi dalam beberapa tahun terakhir telah membawa perubahan besar terhadap industri musik, khususnya dalam cara generasi muda mengonsumsi musik (Noviani et al., 2020). Perkembangan platform musik digital memberikan kemudahan bagi pengguna untuk mengakses dan menemukan lagu dalam jumlah yang sangat besar, sehingga pilihan musik menjadi semakin beragam dibandingkan sebelumnya. Namun, banyaknya pilihan juga dapat membuat proses pencarian menjadi lebih kompleks ketika pengguna ingin menemukan lagu berdasarkan perasaan, pengalaman, atau makna tertentu. Kondisi tersebut menunjukkan perlunya suatu pendekatan yang mampu mengorganisasi kumpulan lagu berdasarkan karakteristik tertentu agar pengguna dapat menemukan musik yang sesuai dengan kebutuhan mereka secara lebih terarah." },
+  { id: "02", step: "Tantangan", title: "Klasifikasi Tema & Tantangannya", description: "Tantangan", text: "Salah satu pendekatan yang dapat digunakan untuk mengatasi permasalahan tersebut adalah klasifikasi, yaitu proses pengelompokan objek berdasarkan karakteristik tertentu ke dalam beberapa kelas (Indriani et al., 2017). Pada lirik lagu, klasifikasi dapat digunakan untuk mengelompokkan lagu berdasarkan karakteristik maupun makna yang terkandung di dalamnya. Namun, klasifikasi tema memiliki tantangan yang berbeda dengan klasifikasi sentimen. Klasifikasi sentimen umumnya berfokus pada polaritas seperti positif dan negatif (Basbeth & Fudholi, 2024), sedangkan tema berusaha mengidentifikasi gagasan atau subjek utama dalam sebuah karya (Fang, 2023). Tantangan semakin besar karena tema dapat disampaikan secara implisit melalui hubungan antar kata dan konteks kalimat, sehingga pendekatan yang hanya memperhatikan kemunculan kata belum tentu mampu memahami makna sebenarnya." },
+  { id: "03", step: "Fokus", title: "Tema sebagai Fokus Penelitian", description: "Fokus Penelitian", text: "Tema menjadi penting karena memberikan gambaran mengenai gagasan utama dan pesan yang ingin disampaikan melalui sebuah lagu (Khuzaimatus Sa'adah et al., 2023). Dalam lirik, makna tidak selalu disampaikan secara langsung, tetapi dapat muncul melalui hubungan antar kata, konteks kalimat, maupun penggunaan bahasa yang bersifat kiasan (Asriati & Asmayanti, 2021), sehingga identifikasi tema membutuhkan pemahaman terhadap konteks dan hubungan semantik dalam teks. Penelitian Du (2024) menunjukkan adanya beberapa thematic clusters yang dominan dalam kumpulan lirik, di antaranya love, social justice, dan personal reflection. Temuan tersebut menjadi dasar pemilihan tiga kategori dalam penelitian ini, yaitu cinta, keadilan sosial, dan refleksi diri, yang juga relevan dengan kecenderungan pengguna dalam menemukan musik berdasarkan tema dan kondisi emosional (Fang, 2023)." },
+  { id: "04", step: "Keterbatasan", title: "Keterbatasan Metode Sebelumnya", description: "Keterbatasan", text: "Identifikasi tema pada lirik lagu sebelumnya banyak dilakukan menggunakan pendekatan kualitatif dengan menganalisis teks secara langsung untuk menemukan gagasan dan pesan utama (Khuzaimatus Sa'adah et al., 2023). Meskipun pendekatan tersebut mampu memberikan pemahaman yang mendalam, proses manual menjadi kurang efisien ketika jumlah data semakin besar. Perkembangan machine learning kemudian memungkinkan proses klasifikasi dilakukan secara otomatis menggunakan metode seperti Naïve Bayes (Andriani, 2025) dan TWCNB (Pratiwi, 2014). Namun, metode tradisional masih memiliki keterbatasan dalam memahami hubungan antar kata dan konteks karena representasi fiturnya cenderung mengasumsikan fitur sebagai sesuatu yang independen (Peretz et al., 2024). Keterbatasan tersebut menjadi semakin penting ketika sistem harus memahami makna implisit dan pola bahasa yang kompleks dalam lirik lagu." },
+  { id: "05", step: "Solusi", title: "Deep Learning & IndoBERT", description: "Pendekatan", text: "Keterbatasan metode tradisional mendorong penggunaan pendekatan deep learning yang mampu mempelajari representasi data secara lebih kompleks. Deep learning dapat mempelajari representasi pada berbagai tingkat abstraksi sehingga tidak sepenuhnya bergantung pada fitur yang ditentukan secara manual (LeCun et al., 2015a). Dalam pemrosesan bahasa alami, BERT menjadi salah satu pendekatan penting karena mampu memahami representasi kata berdasarkan konteks dari dua arah (Devlin et al., 2019). Untuk bahasa Indonesia, pendekatan tersebut dikembangkan melalui IndoBERT yang dirancang untuk memahami karakteristik bahasa Indonesia. Koto et al. (2020) menunjukkan bahwa IndoBERT memperoleh F1-score 84,13 pada tugas analisis sentimen, lebih tinggi dibandingkan Naïve Bayes sebesar 70,95 dan LSTM sebesar 71,62. Hasil tersebut menunjukkan potensi transformer dalam memahami konteks bahasa dan menjadi dasar penggunaan IndoBERT untuk klasifikasi tema lirik lagu." },
 ];
 
-type Point = { x: number; y: number };
-
-const CITATION_PATTERN =
-  /([A-Z][\wÀ-ÿ.]*(?:\s(?:et al\.|&|dan)\s[A-Z][\wÀ-ÿ.]*)?,?\s?\(?\d{4}\)?)/g;
+const TOTAL_POINTS = backgroundItems.length;
 
 function renderWithCitationHighlight(text: string) {
-  const parts = text.split(CITATION_PATTERN);
-  return parts.map((part, i) =>
-    i % 2 === 1 ? (
-      <span key={i} className="relative inline-block px-0.5 rounded-lg p-1">
-        <span className="absolute inset-x-0 inset-y-[12%] bg-red-500/25 rounded-sm -z-10" />
-        {part}
-      </span>
-    ) : (
-      <span key={i}>{part}</span>
-    )
-  );
+  const parts = text.split(/([A-Z][\wÀ-ÿ.]*(?:\s(?:et al\.|&|dan)\s[A-Z][\wÀ-ÿ.]*)?,?\s?\(?\d{4}\)?)/g);
+  return parts.map((part, index) => index % 2 === 1 ? (
+    <span key={index} className="relative inline-block px-1"><span className="absolute inset-x-0 top-[12%] bottom-[12%] -z-10 rounded-sm bg-[#8f2525]/20" />{part}</span>
+  ) : (
+    <span key={index}>{part}</span>
+  ));
 }
-
-const DIAGONAL_BANDS: { color: string; bordered?: boolean }[] = [
-  { color: "#0a0a0a" },
-  { color: "#7C2121" },
-  { color: "#6D84D7" },
-  { color: "#ffffff", bordered: true },
-];
 
 export default function BackgroundSection() {
   const [activeIndex, setActiveIndex] = useState(0);
-
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
-  const connectorRefs = useRef<Array<HTMLDivElement | null>>([]);
-  const patchJackRefs = useRef<Array<HTMLButtonElement | null>>([]);
-
-  const [connectorPoints, setConnectorPoints] = useState<Point[]>([]);
-  const [patchPoint, setPatchPoint] = useState<Point>({ x: 0, y: 0 });
-  const [centerX, setCenterX] = useState(0);
-  const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [introProgress, setIntroProgress] = useState(0);
+  const [textPadTop, setTextPadTop] = useState(0);
+  const [leftPadTop, setLeftPadTop] = useState(0);
+  const stickyRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
+  const INTRO_HEIGHT = 160;
+  const CONTENT_HEIGHT = TOTAL_POINTS * 100;
 
   useEffect(() => {
-    const sections = cardRefs.current.filter(
-      (el): el is HTMLDivElement => el !== null
-    );
-    if (sections.length === 0) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const idx = Number(entry.target.getAttribute("data-index"));
-            if (!Number.isNaN(idx)) setActiveIndex(idx);
-          }
-        });
-      },
-      { rootMargin: "-45% 0px -45% 0px", threshold: 0 }
-    );
-
-    sections.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
+    const handleScroll = () => {
+      const section = document.getElementById("background-section");
+      if (!section) return;
+      const rect = section.getBoundingClientRect();
+      const totalScrollDistance = section.offsetHeight - window.innerHeight;
+      if (totalScrollDistance <= 0) return;
+      const totalProgress = Math.min(1, Math.max(0, -rect.top / totalScrollDistance));
+      const introRatio = INTRO_HEIGHT / (INTRO_HEIGHT + CONTENT_HEIGHT);
+      if (totalProgress < introRatio) {
+        const progress = totalProgress / introRatio;
+        setIntroProgress(Math.min(1, Math.max(0, progress)));
+        return;
+      }
+      setIntroProgress(1);
+      const backgroundProgress = (totalProgress - introRatio) / (1 - introRatio);
+      const index = Math.min(TOTAL_POINTS - 1, Math.floor(backgroundProgress * TOTAL_POINTS));
+      setActiveIndex(index);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
-    if (activeIndex == null) return;
-    if (!voiceEnabled) return;
-
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
-
-    const audio = new Audio("/audio/plugin.opus");
-    audioRef.current = audio;
-
-    const timeout = setTimeout(() => {
-      audio.play().catch((err) => {
-        console.error("Gagal memutar audio:", err);
-      });
-    }, 480);
-
-    return () => {
-      clearTimeout(timeout);
-      audio.pause();
-      audio.currentTime = 0;
-      if (audioRef.current === audio) {
-        audioRef.current = null;
+    const update = () => {
+      const grid = gridRef.current;
+      const sticky = stickyRef.current;
+      if (!grid || !sticky) return;
+      if (window.innerWidth < 1024) {
+        setTextPadTop(0);
+        return;
       }
+      const gridTop = grid.getBoundingClientRect().top - sticky.getBoundingClientRect().top;
+      const cableClearance = sticky.getBoundingClientRect().height * 0.34 + 28;
+      setTextPadTop(Math.max(0, cableClearance - gridTop));
     };
-  }, [activeIndex, voiceEnabled]);
+    update();
+    window.addEventListener("resize", update);
+    window.addEventListener("scroll", update, { passive: true });
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("scroll", update);
+    };
+  }, []);
 
-  const measure = useCallback(() => {
-    const containerRect = containerRef.current?.getBoundingClientRect();
-    if (!containerRect) return;
+  useEffect(() => {
+    const align = () => {
+      const grid = gridRef.current;
+      const text = textRef.current;
+      if (!grid || !text) return;
+      if (window.innerWidth < 1024) {
+        setLeftPadTop(0);
+        return;
+      }
+      setLeftPadTop(Math.max(0, text.getBoundingClientRect().top - grid.getBoundingClientRect().top));
+    };
+    const raf = requestAnimationFrame(align);
+    window.addEventListener("resize", align);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", align);
+    };
+  }, [textPadTop, activeIndex]);
 
-    const points = connectorRefs.current.map((el) => {
-      if (!el) return { x: 0, y: 0 };
-      const r = el.getBoundingClientRect();
-      return {
-        x: r.left - containerRect.left + r.width / 2,
-        y: r.top - containerRect.top + r.height / 2,
-      };
-    });
-    setConnectorPoints(points);
-    setCenterX(containerRect.width / 2);
+  const activeItem = backgroundItems[activeIndex];
 
-    const patchEl = patchJackRefs.current[activeIndex];
-    const patchRect = patchEl?.getBoundingClientRect();
-    if (patchRect) {
-      setPatchPoint({
-        x: patchRect.left - containerRect.left + patchRect.width / 2,
-        y: patchRect.top - containerRect.top + patchRect.height / 2,
-      });
-    }
-  }, [activeIndex]);
-
-  useLayoutEffect(() => {
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, [measure]);
-
-  const activePoint = connectorPoints[activeIndex];
-
-  const cablePath = (() => {
-    if (!activePoint || (activePoint.x === 0 && activePoint.y === 0)) return "";
-    const startX = patchPoint.x || centerX;
-    const startY = patchPoint.y || 0;
-    const bendY = activePoint.y - 40;
-    const midX = (centerX + activePoint.x) / 2;
-
-    return `M ${startX} ${startY} C ${startX} ${startY + 60}, ${centerX} ${
-      bendY - 60
-    }, ${centerX} ${bendY} C ${centerX} ${bendY + 20}, ${midX} ${
-      activePoint.y
-    }, ${activePoint.x} ${activePoint.y}`;
-  })();
+  const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+  const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+  const bgWipe = easeInOut(clamp01(introProgress / 0.4));
+  const cableDraw = clamp01((introProgress - 0.44) / 0.44);
+  const titleVisible = introProgress >= 0.46;
+  const pointsVisible = introProgress >= 0.9;
 
   return (
-    <section
-      id="background"
-      ref={sectionRef}
-      className="relative z-10 mx-4 md:mx-8 mt-10 md:mt-16 mb-10 md:mb-16"
-    >
-      <h2
-        className={`${jockeyOneRegular.className} text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-black text-center tracking-tight`}
-      >
-        Background
-      </h2>
-
-      <div className="relative pt-10">
+    <section id="background-section" className="relative z-10 w-full bg-white" style={{ minHeight: `${INTRO_HEIGHT + CONTENT_HEIGHT}vh` }}>
+      <div ref={stickyRef} className="sticky top-0 z-10 flex min-h-screen w-full overflow-visible bg-[#111111]">
         <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 left-1/2 -z-10 w-screen -translate-x-1/2 overflow-hidden"
-        >
-          <div className="absolute left-1/2 top-1/2 w-[160%] -translate-x-1/2 -translate-y-1/2 -rotate-[12deg]">
-            <div className="flex flex-col">
-              {DIAGONAL_BANDS.map((band, i) => (
-                <div
-                  key={i}
-                  className="h-16 w-full md:h-24"
-                  style={{
-                    backgroundColor: band.color,
-                    borderTop: band.bordered ? "2px solid #000" : undefined,
-                    borderBottom: band.bordered ? "2px solid #000" : undefined,
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 hidden md:flex flex-col items-start gap-1">
-            {Array.from({ length: 14 }).map((_, i) => (
-              <span
-                key={i}
-                className={`h-px bg-gray-300 ${i % 4 === 0 ? "w-3" : "w-1.5"}`}
-              />
-            ))}
-            <span className="h-0.5 w-3 bg-red-500/70 mt-1" />
-          </div>
-
-          <svg
-            className="absolute top-4 right-16 md:right-24 hidden sm:block opacity-40"
-            width="70"
-            height="16"
-            viewBox="0 0 70 16"
-          >
-            <polyline
-              points="0,8 6,3 12,13 18,5 24,11 30,2 36,14 42,6 48,10 54,4 60,12 66,7 70,8"
-              fill="none"
-              stroke="#BDBDBD"
-              strokeWidth="1"
-            />
-          </svg>
-
-          <div className="absolute left-0 right-0 top-1/3 border-t border-dashed border-gray-200" />
-          <div className="absolute left-0 right-0 top-2/3 border-t border-dashed border-gray-200" />
+          className="pointer-events-none absolute inset-x-0 top-0 z-0 bg-white"
+          style={{
+            height: `${bgWipe * 100}%`,
+            transition: "height 420ms cubic-bezier(0.22, 1, 0.36, 1)",
+            willChange: "height",
+          }}
+        />
+        <div className="absolute inset-0 mx-auto w-full max-w-[1600px]">
+          <BackgroundCable draw={cableDraw} />
         </div>
-
-        <div className="flex flex-col items-center mb-10 md:mb-14">
-          <div className="relative flex items-center gap-3 sm:gap-4 rounded-xl border-2 border-white/80 bg-gradient-to-b from-zinc-800 to-zinc-950 px-4 sm:px-5 py-3">
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 rounded-xl opacity-[0.06]"
-              style={{
-                backgroundImage:
-                  "repeating-linear-gradient(90deg, #fff 0px, #fff 1px, transparent 1px, transparent 3px)",
-              }}
-            />
-
-            <div className="relative z-10 flex items-center gap-2 sm:gap-2.5">
-              {backgroundItems.map((item, i) => {
-                const isActive = i === activeIndex;
-                return isActive ? (
-                  <button
-                    key={item.id}
-                    type="button"
-                    aria-label={`Fokus ke ${item.title}`}
-                    onClick={() =>
-                      cardRefs.current[i]?.scrollIntoView({
-                        behavior: "smooth",
-                        block: "center",
-                      })
-                    }
-                    ref={(el) => {
-                      patchJackRefs.current[i] = el;
-                    }}
-                    className="relative flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border-2 border-red-500 bg-black shadow-[0_0_10px_rgba(239,68,68,0.5)] cursor-pointer"
-                  >
-                    <span className="h-3.5 w-3.5 rounded-full border border-red-400 bg-zinc-900" />
-                    <span className="absolute inset-0 rounded-full border border-red-500/40 animate-ping" />
-                  </button>
-                ) : (
-                  <button
-                    key={item.id}
-                    type="button"
-                    aria-label={`Fokus ke ${item.title}`}
-                    onClick={() =>
-                      cardRefs.current[i]?.scrollIntoView({
-                        behavior: "smooth",
-                        block: "center",
-                      })
-                    }
-                    ref={(el) => {
-                      patchJackRefs.current[i] = el;
-                    }}
-                    className="relative flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full border border-white/40 bg-zinc-900 cursor-pointer transition-colors duration-300 hover:border-white/70"
-                  >
-                    <span className="h-0.5 w-2 rotate-45 rounded-full bg-white/50" />
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="w-px h-6 bg-white/20" />
-
-            <div className="hidden sm:flex items-center gap-3" aria-hidden="true">
-              <div className="flex flex-col items-center gap-1">
-                <span
-                  className={`${oswaldMedium.className} text-[7px] uppercase tracking-wide text-white/40`}
-                >
-                  Line/Inst
-                </span>
-                <span className="flex h-3 w-6 items-center rounded-full border border-white/30 bg-zinc-800 px-0.5">
-                  <span className="h-2 w-2 rounded-full bg-white/50" />
-                </span>
-              </div>
-              <div className="flex flex-col items-center gap-1">
-                <span
-                  className={`${oswaldMedium.className} text-[7px] uppercase tracking-wide text-white/40`}
-                >
-                  Pad
-                </span>
-                <span className="flex h-3 w-6 items-center justify-end rounded-full border border-white/30 bg-zinc-800 px-0.5">
-                  <span className="h-2 w-2 rounded-full bg-red-500/70" />
-                </span>
-              </div>
-            </div>
-
-            <div className="hidden sm:block w-px h-6 bg-white/20" aria-hidden="true" />
-
-            {/* Decorative CLIP / SIG LEDs */}
-            <div className="hidden md:flex flex-col items-center gap-1" aria-hidden="true">
-              <span className="h-1.5 w-1.5 rounded-full bg-red-500/60" />
-              <span className="h-1.5 w-1.5 rounded-full bg-green-400/70" />
-            </div>
-
-            <div className="hidden md:flex flex-col items-center gap-1" aria-hidden="true">
-              <span
-                className={`${oswaldMedium.className} text-[7px] uppercase tracking-wide text-white/40`}
-              >
-                Gain
-              </span>
-              <span className="relative h-4 w-4 rounded-full border border-white/40 bg-zinc-800">
-                <span className="absolute left-1/2 top-0 h-1.5 w-px -translate-x-1/2 bg-white/60" />
-              </span>
-            </div>
-
-            <div className="w-px h-6 bg-white/20" />
-            <button
-              type="button"
-              onClick={() => setVoiceEnabled((prev) => !prev)}
-              aria-pressed={voiceEnabled}
-              className={`relative z-10 flex items-center gap-1.5 rounded-full border-2 px-2.5 py-1 transition-colors duration-300 cursor-pointer ${
-                voiceEnabled
-                  ? "border-red-500 bg-red-500/10"
-                  : "border-white/40 bg-black hover:border-white"
-              }`}
-            >
-              <span
-                className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${
-                  voiceEnabled ? "bg-red-500 animate-pulse" : "bg-white/30"
-                }`}
-              />
-              <span
-                className={`${oswaldMedium.className} text-[10px] uppercase tracking-wide transition-colors duration-300 ${
-                  voiceEnabled ? "text-red-500" : "text-white/50"
-                }`}
-              >
-                {voiceEnabled ? "Voice On" : "Voice Off"}
-              </span>
-            </button>
-
-            <div className="hidden lg:flex flex-col items-center gap-1" aria-hidden="true">
-              <span
-                className={`${oswaldMedium.className} text-[7px] uppercase tracking-wide text-white/40`}
-              >
-                Reverb
-              </span>
-              <span className="relative h-5 w-5 rounded-full border-2 border-white/50 bg-zinc-800">
-                <span className="absolute left-1/2 top-0 h-2 w-px -translate-x-1/2 bg-white/70" />
-              </span>
-            </div>
-          </div>
-          <span
-            className={`${oswaldMedium.className} text-[10px] uppercase tracking-wide text-black/50 mt-2`}
+          <div className="relative z-20 mx-auto flex min-h-screen w-full max-w-[1600px] flex-col px-10 sm:px-14 md:px-24 lg:px-20 ">          
+          <motion.div
+            className="relative z-30 pt-4"
+            initial={false}
+            animate={{ opacity: titleVisible ? 1 : 0, y: titleVisible ? 0 : 30 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           >
-            Audio Interface
-          </span>
-        </div>
-
-        <div ref={containerRef} className="relative max-w-4xl mx-auto">
-          <svg
-            className="absolute inset-0 h-full w-full pointer-events-none z-20"
-            style={{ overflow: "visible" }}
+            <h2 className={`${jockeyOneRegular.className} text-[2.5rem] leading-[0.85] tracking-[-0.03em] text-black sm:text-[3rem] md:text-[4rem] lg:text-[8rem]`}>Background</h2>
+          </motion.div>
+          <motion.div
+            className="relative z-20 flex w-full flex-1 flex-col pb-4"
+            initial={false}
+            animate={{ opacity: pointsVisible ? 1 : 0, y: pointsVisible ? 0 : 30 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            style={{ pointerEvents: pointsVisible ? "auto" : "none" }}
           >
-            <AnimatePresence mode="wait">
-              {cablePath && (
-                <motion.g
-                  key={activeIndex}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.6, ease: "easeInOut" }}
-                >
-                  <path
-                    d={cablePath}
-                    fill="none"
-                    stroke="#0a0a0a"
-                    strokeWidth={10}
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d={cablePath}
-                    fill="none"
-                    stroke="#6b6b6b"
-                    strokeWidth={2}
-                    strokeLinecap="round"
-                    opacity={0.5}
-                  />
-                  {activePoint && (
-                    <g
-                      transform={`translate(${activePoint.x - 15}, ${
-                        activePoint.y - 11
-                      })`}
-                    >
-                      <rect
-                        width="30"
-                        height="22"
-                        rx="6"
-                        fill="#141414"
-                        stroke="#000"
-                        strokeWidth="1"
-                      />
-                      <circle
-                        cx="15"
-                        cy="11"
-                        r="8.5"
-                        fill="none"
-                        stroke="#EF4444"
-                        strokeWidth="2"
-                      />
-                      <circle cx="10" cy="7.5" r="1.4" fill="#777" />
-                      <circle cx="20" cy="7.5" r="1.4" fill="#777" />
-                      <circle cx="15" cy="15" r="1.4" fill="#777" />
-                    </g>
-                  )}
-                </motion.g>
-              )}
-            </AnimatePresence>
-          </svg>
-
-          <div className="flex flex-col gap-8 md:gap-12 relative z-10">
-            {backgroundItems.map((item, idx) => {
-              const isActive = idx === activeIndex;
-              const isRight = idx % 2 === 1;
-              return (
-                <div
-                  key={item.id}
-                  ref={(el) => {
-                    cardRefs.current[idx] = el;
-                  }}
-                  data-index={idx}
-                  className={`flex ${
-                    isRight
-                      ? "justify-center md:justify-end"
-                      : "justify-center md:justify-start"
-                  }`}
-                >
-                  <div
-                    className={`relative w-full md:w-[46%] rounded-2xl border-2 bg-black px-4 py-4 md:px-6 md:py-5 transition-colors duration-500 ${
-                      isActive ? "border-red-500" : "border-white"
-                    }`}
-                  >
-                    <div
-                      className={`flex items-center gap-3 md:gap-4 ${
-                        isRight ? "md:flex-row-reverse" : ""
-                      }`}
-                    >
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`${oswaldMedium.className} text-xs md:text-sm transition-colors duration-500 ${
-                              isActive ? "text-red-500" : "text-white"
-                            }`}
-                          >
-                            {item.id}
-                          </span>
-                          <span
-                            className={`${oswaldMedium.className} text-[12px] md:text-sm uppercase tracking-wide transition-colors duration-500 ${
-                              isActive ? "text-red-500" : "text-white/50"
-                            }`}
-                          >
-                            {item.step}
-                          </span>
-                        </div>
-                        <h3
-                          className={`${oswaldMedium.className} text-base md:text-xl transition-colors duration-500 ${
-                            isActive ? "text-red-500" : "text-white"
-                          }`}
-                        >
-                          {item.title}
-                        </h3>
-                      </div>
-
-                      <div
-                        ref={(el) => {
-                          connectorRefs.current[idx] = el;
-                        }}
-                        className={`relative w-9 h-9 md:w-10 md:h-10 rounded-full border-2 bg-black shrink-0 flex items-center justify-center transition-colors duration-500 ${
-                          isActive ? "border-red-500" : "border-white"
-                        }`}
-                      >
-                        <div
-                          className={`w-3 h-3 rounded-full transition-colors duration-500 ${
-                            isActive ? "bg-red-500" : "bg-white"
-                          }`}
-                        />
-                        {isActive && (
-                          <span className="absolute inset-0 rounded-full border-2 border-red-500 animate-ping opacity-40" />
-                        )}
-                      </div>
-                    </div>
-
-                    <AnimatePresence>
-                      {isActive && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -6 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -6 }}
-                          transition={{ duration: 0.3, ease: "easeOut" }}
-                          className="absolute left-0 right-0 top-full mt-2 z-30 rounded-2xl border-2 border-red-500 bg-black px-4 py-4 md:px-6 md:py-5 shadow-[0_0_24px_rgba(239,68,68,0.15)]"
-                        >
-                          <p
-                            className={`${poppinsRegular.className} text-sm md:text-base leading-relaxed text-white/80 text-center`}
-                          >
-                            {renderWithCitationHighlight(item.text)}
-                          </p>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
+            <div className="h-[4px] mb-1 mt-1 w-[1000px] max-w-full shrink-0 bg-black/10 lg:mt-4">
+              <motion.div className="h-full bg-[#8f2525]" animate={{ width: `${((activeIndex + 1) / TOTAL_POINTS) * 100}%` }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }} />
+            </div>
+            <div className="mb-1 mt-1 flex shrink-0 items-center lg:mb-3 lg:mt-2" />            
+              <div ref={gridRef} className="mt-1 grid min-h-0 flex-1 grid-cols-1 gap-2 lg:mt-4 lg:gap-10 lg:grid-cols-[0.85fr_1.6fr]">              
+                <div className="flex flex-col items-start" style={{ paddingTop: leftPadTop }}>
+                <div className="flex items-baseline gap-4">
+                  <AnimatePresence mode="wait">
+                    <motion.span key={activeItem.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className={`${oswaldMedium.className} text-2xl font-bold leading-none text-[#8f2525] md:text-3xl`}>{activeItem.id}.</motion.span>
+                  </AnimatePresence>
+                  <AnimatePresence mode="wait">
+                    <motion.span key={activeItem.step} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }} className={`${oswaldMedium.className} text-sm uppercase tracking-[0.2em] text-black/45 md:text-base`}>{activeItem.step}</motion.span>
+                  </AnimatePresence>
                 </div>
-              );
-            })}
-          <div className="h-32 sm:h-24 md:h-16" aria-hidden="true" /></div>
+                  <div className="mt-6 overflow-hidden lg:mt-10">
+                    <AnimatePresence mode="wait">
+                      <motion.h3 key={activeItem.id} initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -40 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className={`${jockeyOneRegular.className} max-w-[430px] text-[1.75rem] leading-[0.95] tracking-[-0.02em] text-black sm:text-[2.25rem] md:text-[2.75rem] lg:text-[5rem]`}>{activeItem.title}</motion.h3>
+                    </AnimatePresence>
+                    <motion.div className="mt-5 h-[4px] bg-[#8f2525]" animate={{ width: 80 }} />
+                </div>
+              </div>
+              <div className="flex items-center" style={{ paddingTop: textPadTop }}>
+                <div ref={textRef} className="overflow-hidden">
+                  <AnimatePresence mode="wait">
+                    <motion.p key={activeItem.id} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -30 }} className={`${poppinsRegular.className} max-w-[790px] text-sm leading-[1.4] text-black/70 sm:text-base sm:leading-[1.5] md:leading-[1.6] lg:text-lg lg:leading-[1.9]`}>{renderWithCitationHighlight(activeItem.text)}</motion.p>
+                  </AnimatePresence>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>

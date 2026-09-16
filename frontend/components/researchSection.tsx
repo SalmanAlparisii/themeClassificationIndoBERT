@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import {
   oswaldMedium,
   oswaldRegular,
@@ -42,6 +42,32 @@ function ReelDot() {
 }
 
 function MarqueeBanner() {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [plugged, setPlugged] = useState(false);
+  const [powered, setPowered] = useState(false);
+
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setPlugged(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.3 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!plugged) return;
+    const t = setTimeout(() => setPowered(true), 700);
+    return () => clearTimeout(t);
+  }, [plugged]);
+
   const item = (
     <span className="mx-2 flex shrink-0 items-center gap-2 rounded-md px-3 py-2 sm:gap-2.5 sm:px-4 sm:py-2.5 md:gap-3 md:px-5 md:py-3 lg:px-6 lg:py-3.5">
       <span className="h-2.5 w-2.5 shrink-0 border-2 border-white sm:h-3 sm:w-3 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" aria-hidden="true" />
@@ -55,9 +81,28 @@ function MarqueeBanner() {
   );
 
   return (
-    <div className="-mx-4 md:-mx-8">
-      <div className="-ml-[2%] w-[104%] -rotate-1 border-t-4 border-b-4 border-white bg-[#111111] mt-12">
+    <div ref={wrapRef} className="relative -mx-4 md:-mx-8">
+      <div
+        className={`-ml-[2%] w-[104%] -rotate-1 border-t-4 border-b-4 border-white bg-[#111111]`}
+      >
         <style jsx global>{`
+          @keyframes banner-power-on {
+            0%, 12% { opacity: 0; }
+            13%, 24% { opacity: 1; }
+            25%, 36% { opacity: 0; }
+            37%, 48% { opacity: 1; }
+            49%, 58% { opacity: 0; }
+            59%, 100% { opacity: 1; }
+          }
+          .banner-power-on {
+            animation: banner-power-on 1.1s steps(1, end) forwards;
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .banner-power-on {
+              animation: none;
+              opacity: 1;
+            }
+          }
           @keyframes research-marquee {
             from {
               transform: translateX(0);
@@ -246,7 +291,7 @@ function ResearchAccordion() {
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
             <button
               type="button"
-              className="group pointer-events-auto flex w-[87.5%] items-center justify-between gap-3 rounded-lg border-2 border-black bg-black px-4 py-1 text-white transition-colors duration-300"
+              className="group pointer-events-auto flex w-[87.5%] items-center justify-between gap-3 rounded-lg border-2 border-black bg-black px-1 py-1 lg:px-4 lg:py-1 text-white transition-colors duration-300"
             >
               <img
                 src="/gearIcon.svg"
@@ -254,7 +299,7 @@ function ResearchAccordion() {
                 aria-hidden="true"
                 className="h-8 w-8 md:h-12 md:w-12"
               />
-              <span className={`${oswaldMedium.className} text-2xl md:text-3xl`}>
+              <span className={`${oswaldMedium.className} text-base md:text-3xl`}>
                 {section.label}
               </span>
               <img
@@ -285,7 +330,7 @@ function CassettePanel() {
 
 export default function ResearchPage() {
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-visible">
       <div className="relative z-20 px-4 md:px-8">
         <MarqueeBanner />
       </div>

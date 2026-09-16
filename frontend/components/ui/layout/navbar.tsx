@@ -7,20 +7,38 @@ import { jockeyOneRegular, ppEditorialNew } from "@/app/layout";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const scrollToSection = (id: string) => {
+    const section = document.getElementById(id);
 
-  const menus = ["Dashboard", "Background", "Research", "Dataset", "Methodology", "Result", "Try Model"];
+    if (section) {
+      section.scrollIntoView ({
+        behavior : "smooth",
+        block : "start"
+      });
+      setIsOpen(false);
+    }
+  };
+  const menus = [
+    { name: "Dashboard", id: "dashboard" },
+    { name: "Background", id: "background" },
+    { name: "Research", id: "research" },
+    { name: "Dataset", id: "dataset" },
+    { name: "Methodology", id: "methodology" },
+    { name: "Result", id: "result" },
+    { name: "Try Model", id: "try-model" },
+  ];
 
   return (
     <header className="relative bg-white rounded-xl mx-4 md:mx-8 my-2">
       <div className={`flex items-center h-[60px] lg:justify-start justify-between w-full ${jockeyOneRegular.className}`}>
-        <div className="flex items-center flex-shrink-0">
+        <button className="flex items-center flex-shrink-0">
           <Image src="/likeTheme.svg" alt="Like Theme Logo" width={80} height={80} />
           <h1 className={`-ml-3 text-3xl italic leading-none translate-y-[2px] ${ppEditorialNew.className}`}>LikeTheme</h1>
-        </div>
+        </button>
 
         <nav className="hidden lg:flex items-center gap-6 text-2xl ml-12">
           {menus.map((menu) => (
-            <a key={menu} href="#" className="hover:text-red-500 transition-colors">{menu}</a>
+            <button key={menu.id} onClick= {()=> scrollToSection(menu.id)} className="hover:text-red-500 transition-colors cursor-pointer">{menu.name}</button>
           ))}
         </nav>
 
@@ -32,8 +50,8 @@ function Navbar() {
       {isOpen && (
         <nav className={`absolute top-full left-0 right-0 z-50 flex flex-col gap-1 bg-white border border-black/10 rounded-b-xl shadow-lg px-5 py-5 text-lg lg:hidden ${jockeyOneRegular.className}`}>
           {menus.map((menu) => (
-            <div key={menu} className="group rounded-lg px-3 py-2 transition-shadow duration-200 hover:shadow-md active:shadow-md">
-              <a href="#" className="transition-colors group-hover:text-red-500 group-active:text-red-500">{menu}</a>
+            <div key={menu.id} className="group rounded-lg px-3 py-2 transition-shadow duration-200 hover:shadow-md active:shadow-md">
+              <button onClick={()=> scrollToSection(menu.id)} className="transition-colors group-hover:text-red-500 group-active:text-red-500">{menu.name}</button>
             </div>
           ))}
         </nav>

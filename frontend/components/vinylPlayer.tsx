@@ -78,8 +78,6 @@ export default function VinylPlayer({
     };
   }, []);
 
-  // Kunci scroll body saat popup terbuka, sambil kompensasi lebar scrollbar
-  // supaya halaman tidak "melebar/menyempit" (mencegah tampilan terasa "berubah").
   useEffect(() => {
     if (activeDetail !== null) {
       const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
@@ -130,7 +128,6 @@ export default function VinylPlayer({
     setVolumeRotation((r) => {
       const next = r + (delta > 0 ? 18 : -18);
 
-      // batasi supaya terasa seperti knob asli
       if (next > 135) return 135;
       if (next < -135) return -135;
 
@@ -525,48 +522,49 @@ export default function VinylPlayer({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 border-2 border-t-0 border-black rounded-b-2xl overflow-hidden">
-            <div className="bg-[#7C2121] pb-1 text-white rounded-bl-2xl">
-              <div className="bg-black px-3 py-1">
-                <p className={`text-xl md:text-2xl lg:text-3xl text-center ${oswaldMedium.className}`}>{importance.label}</p>
-              </div>
-              <div className="px-4 pt-2 md:pt-3">
-                <div className="flex justify-center">
-                  <p className={`text-4xl md:text-5xl lg:text-6xl leading-none ${oswaldBold.className}`}>{importance.value}%</p>
-                </div>
-                {(importance.quote || importance.note) && (
-                  <div className="mt-1 sm:mt-1 md:mt-1 lg:mt-2 pt-1 md:pt-2 lg:pt-3">
-                    <p className={`text-left text-[11px] md:text-[12px] leading-relaxed ${poppinsRegular.className}`}>
-                      {importance.quote} {importance.note}
-                      <button className={`inline-block rounded-lg bg-[#6D84D7] px-3 py-1 ml-1 text-[13px] md:text-[14px] leading-none align-middle shadow-2xl transition-all duration-200 ease-out hover:-translate-y-0.5 cursor-pointer hover:shadow-4xl border-2 border-transparent hover:border-white ${poppinsRegular.className}`} onClick={() => setActiveDetail("importance")}>
-                        {importance.date}
-                      </button>
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
+        </div>
+      </div>
 
-            <div className="bg-[#6D84D7] pb-1 text-white rounded-br-2xl">
-              <div className="bg-white px-3 py-1">
-                <p className={`text-xl md:text-2xl lg:text-3xl text-center text-black ${oswaldMedium.className}`}>{researchGap.label}</p>
-              </div>
-              <div className="px-4 pt-2 md:pt-3">
-                <div className="flex justify-center">
-                  <p className={`text-4xl md:text-5xl lg:text-6xl leading-none ${oswaldBold.className}`}>{researchGap.value}%</p>
-                </div>
-                {(researchGap.quote || researchGap.note) && (
-                  <div className="mt-1 sm:mt-1 md:mt-1 lg:mt-2 pt-1 md:pt-2 lg:pt-3">
-                    <p className={`text-left text-[11px] md:text-[12px] leading-relaxed ${poppinsRegular.className}`}>
-                      {researchGap.quote} {researchGap.note}
-                      <button className={`inline-block rounded-lg bg-[#7C2121] px-3 py-1 text-[13px] md:text-[14px] leading-none align-middle shadow-2xl transition-all duration-200 ease-out hover:-translate-y-0.5 cursor-pointer hover:shadow-4xl border-2 border-transparent hover:border-white ${poppinsRegular.className}`} onClick={() => setActiveDetail("researchGap")}>
-                        {researchGap.date}
-                      </button>
-                    </p>
-                  </div>
-                )}
-              </div>
+      <div className="grid grid-cols-2 border-2 border-black rounded-b-2xl overflow-hidden mx-4 max-w-[500px] mx-auto lg:mx-0 lg:ml-auto">
+        <div className="bg-[#7C2121] pb-1 text-white rounded-bl-2xl">
+          <div className="bg-black px-3 py-1">
+            <p className={`text-base sm:text-xl md:text-2xl lg:text-3xl text-center ${oswaldMedium.className}`}>{importance.label}</p>
+          </div>
+          <div className="px-4 pt-2 md:pt-3">
+            <div className="flex justify-center">
+              <p className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-none ${oswaldBold.className}`}>{importance.value}%</p>
             </div>
+            {(importance.quote || importance.note) && (
+              <div className="mt-1 pt-1 md:pt-2 lg:pt-3">
+                <p className={`text-left text-[10px] sm:text-[11px] md:text-[12px] leading-relaxed ${poppinsRegular.className}`}>
+                  {importance.quote} {importance.note}
+                  <button className={`inline-block rounded-lg bg-[#6D84D7] px-2 py-0.5 sm:px-3 sm:py-1 ml-1 text-[11px] sm:text-[13px] md:text-[14px] leading-none align-middle shadow-2xl transition-all duration-200 ease-out hover:-translate-y-0.5 cursor-pointer hover:shadow-4xl border-2 border-transparent hover:border-white ${poppinsRegular.className}`} onClick={() => setActiveDetail("importance")}>
+                    {importance.date}
+                  </button>
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="bg-[#6D84D7] pb-1 text-white rounded-br-2xl">
+          <div className="bg-white px-3 py-1">
+            <p className={`text-base sm:text-xl md:text-2xl lg:text-3xl text-center text-black ${oswaldMedium.className}`}>{researchGap.label}</p>
+          </div>
+          <div className="px-4 pt-2 md:pt-3">
+            <div className="flex justify-center">
+              <p className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-none ${oswaldBold.className}`}>{researchGap.value}%</p>
+            </div>
+            {(researchGap.quote || researchGap.note) && (
+              <div className="mt-1 pt-1 md:pt-2 lg:pt-3">
+                <p className={`text-left text-[10px] sm:text-[11px] md:text-[12px] leading-relaxed ${poppinsRegular.className}`}>
+                  {researchGap.quote} {researchGap.note}
+                  <button className={`inline-block rounded-lg bg-[#7C2121] px-2 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-[13px] md:text-[14px] leading-none align-middle shadow-2xl transition-all duration-200 ease-out hover:-translate-y-0.5 cursor-pointer hover:shadow-4xl border-2 border-transparent hover:border-white ${poppinsRegular.className}`} onClick={() => setActiveDetail("researchGap")}>
+                    {researchGap.date}
+                  </button>
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

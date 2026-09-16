@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <div className="relative">
       <Navbar />
-
+      <section id="dashboard" className="scroll-mt-20 mb-24">
       <div className="relative z-15 border-2 border-black mt-3 md:mt-4 rounded-2xl w-fit mx-4 md:mx-8 bg-[#F5F5F5] px-2 md:px-4">
         <h1 className={`${jockeyOneRegular.className} text-3xl sm:text-5xl md:text-6xl lg:text-8xl p-2 md:p-3`}>
           Theme Classification
@@ -24,9 +24,9 @@ export default function Home() {
         </h1>
       </div>
 
-      <VinylPlayer className="relative mt-6 mx-auto lg:absolute lg:right-8 lg:top-4 z-10" />
-
-      <div className="relative z-5 mt-4 max-w-[850px] lg:max-w-[550px] mx-4 md:mx-10">
+      <VinylPlayer className="relative mt-6 mx-auto lg:absolute lg:right-8 lg:top-10 z-10" />
+      
+      <div className="relative z-5 mt-4 max-w-[500px] mx-auto lg:mx-10">
         <h1 className={`${poppinsRegular.className} text-base sm:text-lg md:text-xl lg:text-2xl pb-3 pr-3 pt-3 text-center lg:text-left`}>
           The method for classifying theme songs into well-known popular themes is based on listeners&apos; search behavior
         </h1>
@@ -57,9 +57,17 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <BackgroundSection></BackgroundSection>
-      <ResearchSection></ResearchSection>
-      <DatasetSection></DatasetSection>
+      </section>
+   
+      <BackgroundSection/>
+
+      <section id="research" className="scroll-mt-20">
+        <ResearchSection />
+      </section>
+
+      <section id="dataset" className="scroll-mt-20">
+        <DatasetSection />
+      </section>
     </div>
   );
 }
