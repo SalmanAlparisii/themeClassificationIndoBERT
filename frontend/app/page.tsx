@@ -7,10 +7,12 @@ import { poppinsMedium } from "./layout";
 import { poppinsExtraLightItalic } from "./layout";
 import ResearchSection from "@/components/researchSection";
 import DatasetSection from "@/components/datasetSection";
+import CableFeed from "@/components/cableFeed";
 
 export default function Home() {
   return (
     <div className="relative">
+      <CableFeed />
       <Navbar />
       <section id="dashboard" className="scroll-mt-20 mb-24">
       <div className="relative z-15 border-2 border-black mt-3 md:mt-4 rounded-2xl w-fit mx-4 md:mx-8 bg-[#F5F5F5] px-2 md:px-4">
@@ -26,13 +28,13 @@ export default function Home() {
 
       <VinylPlayer className="relative mt-6 mx-auto lg:absolute lg:right-8 lg:top-10 z-10" />
       
-      <div className="relative z-5 mt-4 max-w-[500px] mx-auto lg:mx-10">
+      <div className="relative z-5 mt-24 sm:mt-28 md:mt-32 lg:mt-4 max-w-[500px] mx-auto lg:mx-10">
         <h1 className={`${poppinsRegular.className} text-base sm:text-lg md:text-xl lg:text-2xl pb-3 pr-3 pt-3 text-center lg:text-left`}>
           The method for classifying theme songs into well-known popular themes is based on listeners&apos; search behavior
         </h1>
       </div>
 
-      <div className="relative z-5 mt-3 mx-4 md:mx-10 lg:pr-[540px] flex flex-row lg:flex-col items-start justify-between lg:justify-start gap-3 lg:gap-2">
+      <div className="relative z-5 mt-3 mx-4 md:mx-10 lg:pr-[540px] flex flex-row lg:flex-col items-start justify-center lg:justify-start gap-8 sm:gap-12 md:gap-16 lg:gap-2">
         <div className="flex flex-col items-center lg:gap-2">
           <h1 className={`${oswaldMedium.className} text-lg sm:text-2xl md:text-2xl lg:text-3xl font-bold text-center lg:mb-2`}>
             Dont Forget to Try

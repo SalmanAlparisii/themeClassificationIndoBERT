@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode, useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import {
   oswaldMedium,
   oswaldRegular,
@@ -8,6 +9,7 @@ import {
   jockeyOneRegular,
   poppinsRegular,
 } from "@/app/layout";
+import { SOCKET_HEIGHT_RATIO, useCableLayout } from "@/lib/cableGeometry";
 
 type LabelColor = "green" | "gray" | "red";
 
@@ -30,6 +32,7 @@ const colorStyles: Record<LabelColor, { bg: string; text: string }> = {
   red: { bg: "bg-[#E23B32]", text: "text-white" },
 };
 
+
 function ReelDot() {
   return (
     <span
@@ -41,31 +44,129 @@ function ReelDot() {
   );
 }
 
-function MarqueeBanner() {
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const [plugged, setPlugged] = useState(false);
-  const [powered, setPowered] = useState(false);
+function SocketPort({ active, width }: { active: boolean; width: number }) {
+  const w = Math.max(8, Math.round(width * 1.08));
+  const h = Math.max(4, Math.round(width * SOCKET_HEIGHT_RATIO));
+
+  return (
+    <motion.span
+      aria-hidden="true"
+      className="relative block rounded-full bg-black"
+      style={{ width: w, height: h }}
+      initial={false}
+      animate={
+        active
+          ? { scaleX: [1, 1.12, 1], scaleY: [1, 0.82, 1] }
+          : { scaleX: 1, scaleY: 1 }
+      }
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+    />
+  );
+}
+
+function SocketRow({
+  plugged,
+  remeasureSignal,
+}: {
+  plugged: boolean;
+  remeasureSignal?: number;
+}) {
+  const layout = useCableLayout();
+  const rowRef = useRef<HTMLDivElement>(null);
+  const [lefts, setLefts] = useState<number[]>([]);
 
   useEffect(() => {
-    const el = wrapRef.current;
+    const update = () => {
+      const el = rowRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const next = layout.endpoints.map((e) => e.viewportX - rect.left);
+      setLefts((prev) =>
+        prev.length === next.length &&
+        prev.every((v, i) => Math.abs(v - next[i]) < 0.5)
+          ? prev
+          : next
+      );
+    };
+
+    update();
+    const raf = requestAnimationFrame(update);
+    window.addEventListener("resize", update);
+    window.addEventListener("load", update);
+    let cancelled = false;
+    if (typeof document !== "undefined" && "fonts" in document) {
+      document.fonts.ready.then(() => {
+        if (!cancelled) requestAnimationFrame(update);
+      });
+    }
+    const ro = new ResizeObserver(update);
+    ro.observe(rowRef.current ?? document.body);
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", update);
+      window.removeEventListener("load", update);
+      ro.disconnect();
+    };
+  }, [layout, remeasureSignal]);
+
+  return (
+    <div
+      ref={rowRef}
+      data-cable-socket-row
+      className="pointer-events-none absolute inset-x-0 z-20"
+      style={{ top: -Math.round(layout.widthPx * SOCKET_HEIGHT_RATIO * 0.5) }}
+      aria-hidden="true"
+    >
+      {lefts.map((left, i) => (
+        <span
+          key={i}
+          className="absolute"
+          style={{ left, transform: "translateX(-50%)" }}
+        >
+          <SocketPort active={plugged} width={layout.widthPx} />
+        </span>
+      ))}
+    </div>
+  );
+}
+
+interface MarqueeBannerProps {
+  plugged?: boolean;
+}
+
+function MarqueeBanner({ plugged: pluggedProp }: MarqueeBannerProps) {
+  const [autoPlugged, setAutoPlugged] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (pluggedProp !== undefined) return;
+    const el = wrapperRef.current;
     if (!el) return;
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setPlugged(true);
+          setAutoPlugged(true);
           io.disconnect();
         }
       },
-      { threshold: 0.3 }
+      { threshold: 0.4 }
     );
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [pluggedProp]);
+
+  const plugged = pluggedProp ?? autoPlugged;
+  const [socketRemeasure, setSocketRemeasure] = useState(0);
 
   useEffect(() => {
     if (!plugged) return;
-    const t = setTimeout(() => setPowered(true), 700);
-    return () => clearTimeout(t);
+    // scale/opacity settle di 0.28s, tapi borderColor masih jalan sampai 1s.
+    // onAnimationComplete nunggu SEMUA properti selesai (1s) baru remeasure,
+    // jadi kelihatan lambat. Ukur ulang lebih awal begitu scale sudah settle.
+    const t = window.setTimeout(() => setSocketRemeasure((n) => n + 1), 320);
+    return () => window.clearTimeout(t);
   }, [plugged]);
 
   const item = (
@@ -81,59 +182,77 @@ function MarqueeBanner() {
   );
 
   return (
-    <div ref={wrapRef} className="relative -mx-4 md:-mx-8">
-      <div
-        className={`-ml-[2%] w-[104%] -rotate-1 border-t-4 border-b-4 border-white bg-[#111111]`}
-      >
-        <style jsx global>{`
-          @keyframes banner-power-on {
-            0%, 12% { opacity: 0; }
-            13%, 24% { opacity: 1; }
-            25%, 36% { opacity: 0; }
-            37%, 48% { opacity: 1; }
-            49%, 58% { opacity: 0; }
-            59%, 100% { opacity: 1; }
+    <div ref={wrapperRef} className="-mx-4 md:-mx-8">
+      <div className="relative -ml-[2%] w-[104%] -rotate-1 mt-4">
+        <motion.div
+          className="relative border-t-4 border-b-4 bg-[#111111]"
+          initial={false}
+          onAnimationComplete={() => setSocketRemeasure((n) => n + 1)}
+          animate={
+            plugged
+              ? {
+                  opacity: 1,
+                  scale: 1,
+                  borderColor: [
+                    "rgba(255,255,255,0)",
+                    "rgba(255,255,255,1)",
+                    "rgba(255,255,255,0.12)",
+                    "rgba(255,255,255,1)",
+                    "rgba(255,255,255,0.12)",
+                    "rgba(255,255,255,1)",
+                  ],
+                }
+              : {
+                  opacity: 0,
+                  scale: 0.985,
+                  borderColor: "rgba(255,255,255,0)",
+                }
           }
-          .banner-power-on {
-            animation: banner-power-on 1.1s steps(1, end) forwards;
-          }
-          @media (prefers-reduced-motion: reduce) {
-            .banner-power-on {
-              animation: none;
-              opacity: 1;
+          transition={{
+            opacity: { duration: 0.28, ease: "easeOut" },
+            scale: { duration: 0.28, ease: "easeOut" },
+            borderColor: {
+              duration: 1,
+              times: [0, 0.28, 0.42, 0.56, 0.7, 1],
+              ease: "easeInOut",
+            },
+          }}
+        >
+          <SocketRow plugged={plugged} remeasureSignal={socketRemeasure} />
+
+          <style jsx global>{`
+            @keyframes research-marquee {
+              from {
+                transform: translateX(0);
+              }
+              to {
+                transform: translateX(-50%);
+              }
             }
-          }
-          @keyframes research-marquee {
-            from {
-              transform: translateX(0);
-            }
-            to {
-              transform: translateX(-50%);
-            }
-          }
-          .research-marquee-track {
-            animation: research-marquee 22s linear infinite;
-          }
-          @media (prefers-reduced-motion: reduce) {
             .research-marquee-track {
-              animation: none;
+              animation: research-marquee 22s linear infinite;
             }
-          }
-        `}</style>
-        <div className="overflow-x-hidden">
-          <div className="research-marquee-track flex w-max">
-            <div className="flex shrink-0">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <span key={`a-${i}`}>{item}</span>
-              ))}
-            </div>
-            <div className="flex shrink-0" aria-hidden="true">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <span key={`b-${i}`}>{item}</span>
-              ))}
+            @media (prefers-reduced-motion: reduce) {
+              .research-marquee-track {
+                animation: none;
+              }
+            }
+          `}</style>
+          <div className="overflow-x-hidden">
+            <div className="research-marquee-track flex w-max">
+              <div className="flex shrink-0">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <span key={`a-${i}`}>{item}</span>
+                ))}
+              </div>
+              <div className="flex shrink-0" aria-hidden="true">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <span key={`b-${i}`}>{item}</span>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
@@ -145,7 +264,7 @@ function StudioBackground() {
       aria-hidden="true"
       className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
     >
-      <svg className="absolute inset-0 h-full w-full opacity-[0.06]">
+      <svg className="absolute inset-0 h-full w-full">
         <defs>
           <pattern id="research-grid" width="64" height="64" patternUnits="userSpaceOnUse">
             <path d="M64 0H0V64" fill="none" stroke="#ffffff" strokeWidth="1" />
@@ -221,7 +340,7 @@ function TapeLabel({ label, serial, color, isOpen, onToggle, children }: TapeLab
           </span>
         </span>
       </button>
-      
+
       <div
         id={panelId}
         role="region"
@@ -248,7 +367,6 @@ function ResearchAccordion() {
 
   return (
     <div className="flex flex-col gap-3">
-
       {sections.map((section) => (
         <TapeLabel
           key={section.id}
@@ -291,7 +409,7 @@ function ResearchAccordion() {
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
             <button
               type="button"
-              className="group pointer-events-auto flex w-[87.5%] items-center justify-between gap-3 rounded-lg border-2 border-black bg-black px-1 py-1 lg:px-4 lg:py-1 text-white transition-colors duration-300"
+              className="group pointer-events-auto flex w-[87.5%] items-center justify-between gap-3 rounded-lg border-2 border-black bg-black px-4 py-1 text-white transition-colors duration-300"
             >
               <img
                 src="/gearIcon.svg"
@@ -299,7 +417,7 @@ function ResearchAccordion() {
                 aria-hidden="true"
                 className="h-8 w-8 md:h-12 md:w-12"
               />
-              <span className={`${oswaldMedium.className} text-base md:text-3xl`}>
+              <span className={`${oswaldMedium.className} text-2xl md:text-3xl`}>
                 {section.label}
               </span>
               <img
@@ -330,7 +448,7 @@ function CassettePanel() {
 
 export default function ResearchPage() {
   return (
-    <div className="relative overflow-visible">
+    <div className="relative overflow-hidden">
       <div className="relative z-20 px-4 md:px-8">
         <MarqueeBanner />
       </div>

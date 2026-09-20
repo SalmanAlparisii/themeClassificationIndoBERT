@@ -705,14 +705,14 @@ export default function DatasetSection() {
             className="relative w-full max-w-4xl overflow-hidden border-2 border-[#111111] bg-[#FFFFFF] shadow-[0_12px_30px_rgba(0,0,0,0.35)] rounded-lg"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b-2 border-[#111111] bg-[#111111] px-5 py-3 sm:px-8">
+            <div className="flex items-center justify-between border-b-2 border-[#111111] bg-[#FFFFFF] px-5 py-3 sm:px-8">
               <div className="flex items-center gap-3">
-                <span className={`${oswaldBold.className} text-lg text-[#FFFFFF] sm:text-4xl`}>
+                <span className={`${oswaldBold.className} text-lg text-[#111111] sm:text-4xl`}>
                   {String(popupIndex + 1).padStart(2, "0")}
                 </span>
                 <div className="h-6 w-px bg-white/25 sm:h-8" />
                 <div>
-                  <span className={`${oswaldMedium.className} block text-4xl text-[#FFFFFF] sm:text-4xl`}>
+                  <span className={`${oswaldMedium.className} block text-4xl text-[#111111] sm:text-4xl`}>
                     {processStages[popupIndex + 1].label}
                   </span>
                 </div>
@@ -722,9 +722,21 @@ export default function DatasetSection() {
                 type="button"
                 aria-label="Tutup"
                 onClick={() => setPopupIndex(null)}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-[#FFFFFF] text-lg font-bold text-[#FFFFFF] transition-colors hover:bg-[#FFFFFF] hover:text-[#111111]"
+                className="group relative h-8 w-8 shrink-0 cursor-pointer"
               >
-                ×
+                <img
+                  src="/popupButtonOff.svg"
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 h-full w-full select-none transition-opacity duration-200 ease-out group-hover:opacity-0"
+                />
+
+                <img
+                  src="/popupButtonOn.svg"
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 h-full w-full select-none opacity-0 transition-opacity duration-200 ease-out group-hover:opacity-100"
+                />
               </button>
             </div>
 

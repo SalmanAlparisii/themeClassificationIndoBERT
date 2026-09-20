@@ -3,6 +3,7 @@
 import { oswaldBold, oswaldMedium, poppinsMedium, poppinsRegular } from "@/app/layout";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { VINYL_OUTLET_FRACTION } from "@/lib/cableGeometry";
 
 
 type Track = {
@@ -525,7 +526,7 @@ export default function VinylPlayer({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 border-2 border-black rounded-b-2xl overflow-hidden mx-4 max-w-[500px] mx-auto lg:mx-0 lg:ml-auto">
+      <div className="relative grid grid-cols-2 border-2 border-black rounded-b-2xl overflow-hidden mx-4 max-w-[500px] mx-auto lg:mx-0 lg:ml-auto">
         <div className="bg-[#7C2121] pb-1 text-white rounded-bl-2xl">
           <div className="bg-black px-3 py-1">
             <p className={`text-base sm:text-xl md:text-2xl lg:text-3xl text-center ${oswaldMedium.className}`}>{importance.label}</p>
@@ -567,6 +568,18 @@ export default function VinylPlayer({
             )}
           </div>
         </div>
+        <span
+          data-cable-outlet="red"
+          aria-hidden="true"
+          className="pointer-events-none absolute bottom-0 h-px w-px"
+          style={{ left: `${VINYL_OUTLET_FRACTION.red * 100}%` }}
+        />
+        <span
+          data-cable-outlet="blue"
+          aria-hidden="true"
+          className="pointer-events-none absolute bottom-0 h-px w-px"
+          style={{ left: `${VINYL_OUTLET_FRACTION.blue * 100}%` }}
+        />
       </div>
 
       <style jsx>{`
