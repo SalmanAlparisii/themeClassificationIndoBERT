@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type CSSProperties } from "react";
+import { useState, useEffect, type CSSProperties } from "react";
 import Image from "next/image";
 import {
   jockeyOneRegular,
@@ -312,7 +312,7 @@ function TapeLabelStrip({ data, dark = false }: { data: TapeLabelData; dark?: bo
 
         <div className="min-w-0 text-center">
           <span
-            className={`${oswaldBold.className} block truncate text-[9px] font-bold uppercase tracking-wider sm:text-[12px] lg:text-lg ${solidTextClass}`}
+            className={`${jockeyOneRegular.className} block truncate text-[9px] font-bold uppercase tracking-wider sm:text-[12px] lg:text-lg ${solidTextClass}`}
           >
             {data.eyebrow}
           </span>
@@ -335,12 +335,12 @@ function TapeLabelStrip({ data, dark = false }: { data: TapeLabelData; dark?: bo
           {stats.map((stat) => (
             <div key={stat.label} className="min-w-0 text-center">
               <span
-                className={`${oswaldMedium.className} block truncate text-[10px] uppercase tracking-wider sm:text-[12px] lg:text-sm font  ${solidTextClass}`}
+                className={`${jockeyOneRegular.className} block truncate text-[10px] uppercase tracking-wider sm:text-[12px] lg:text-sm font ${solidTextClass}`}
               >
                 {stat.label}
               </span>
               <span
-                className={`${oswaldBold.className} block truncate text-2xl font-bold leading-none sm:text-[28px] lg:text-4xl ${solidTextClass}`}
+                className={`${jockeyOneRegular.className} block truncate text-2xl font-bold leading-none sm:text-[28px] lg:text-4xl ${solidTextClass}`}
               >
                 {stat.value}
               </span>
@@ -352,7 +352,7 @@ function TapeLabelStrip({ data, dark = false }: { data: TapeLabelData; dark?: bo
 
         <div className="min-w-0 text-center">
           <span
-            className={`${oswaldBold.className} block truncate text-[10px] font-bold uppercase tracking-wider sm:text-[12px] lg:text-lg ${solidTextClass}`}
+            className={`${jockeyOneRegular.className} block truncate text-[10px] font-bold uppercase tracking-wider sm:text-[12px] lg:text-lg ${solidTextClass}`}
           >
             Rec. Date
           </span>
@@ -376,7 +376,7 @@ function TapeLabelStrip({ data, dark = false }: { data: TapeLabelData; dark?: bo
               }
             >
               <span
-                className={`${oswaldMedium.className} shrink-0 text-[10px] font-bold uppercase tracking-wide sm:text-[12px] lg:text-sm ${solidTextClass}`}
+                className={`${jockeyOneRegular.className} shrink-0 text-[10px] font-bold uppercase tracking-wide sm:text-[12px] lg:text-sm ${solidTextClass}`}
               >
                 {m.l}
               </span>
@@ -411,6 +411,17 @@ function TapeLabelStrip({ data, dark = false }: { data: TapeLabelData; dark?: bo
 
 export default function DatasetSection() {
   const [popupIndex, setPopupIndex] = useState<number | null>(null);
+
+  // Sama seperti di VinylPlayer: tombol tutup popup ini dikontrol lewat
+  // state React (bukan CSS :hover/:active saja) supaya feedback visualnya
+  // pasti kerender di layar sentuh, dan di-reset tiap popup berganti biar
+  // tidak nyangkut di tampilan "pressed" dari interaksi sebelumnya.
+  const [closePressed, setClosePressed] = useState(false);
+
+  useEffect(() => {
+    setClosePressed(false);
+  }, [popupIndex]);
+
   return (
     <div className="min-h-screen bg-white">
       <div className="mx-auto max-w-7xl px-6 py-10 md:px-10 md:py-14 lg:px-12">
@@ -423,7 +434,7 @@ export default function DatasetSection() {
             </h1>
             <div className="flex items-center gap-4 mt-3">
               <div className="rounded-lg h-4 w-4 bg-[#7C2121]"></div>
-              <span className={`${oswaldMedium.className} block text-lg uppercase tracking-wider text-[#7C2121]`}>
+              <span className={`${jockeyOneRegular.className} block text-lg uppercase tracking-wider text-[#7C2121]`}>
                 Studio Tape Library
               </span>
             </div>
@@ -437,7 +448,7 @@ export default function DatasetSection() {
                 Library Code
               </span>
               <span
-                className={`${poppinsMedium.className} whitespace-nowrap text-[clamp(0.85rem,2.2vw,1.125rem)] font-bold text-[#111111]`}
+                className={`${jockeyOneRegular.className} whitespace-nowrap text-[clamp(0.85rem,2.2vw,1.125rem)] font-bold text-[#111111]`}
               >
                 DS-2025
               </span>
@@ -449,7 +460,7 @@ export default function DatasetSection() {
                 Archive Room
               </span>
               <span
-                className={`${poppinsMedium.className} whitespace-nowrap text-[clamp(0.85rem,2.2vw,1.125rem)] text-[#111111] font-bold`}
+                className={`${jockeyOneRegular.className} whitespace-nowrap text-[clamp(0.85rem,2.2vw,1.125rem)] text-[#111111] font-bold`}
               >
                 A-12
               </span>
@@ -461,7 +472,7 @@ export default function DatasetSection() {
                 Catalog No.
               </span>
               <span
-                className={`${poppinsMedium.className} whitespace-nowrap text-[clamp(0.85rem,2.2vw,1.125rem)] text-[#111111] font-bold`}
+                className={`${jockeyOneRegular.className} whitespace-nowrap text-[clamp(0.85rem,2.2vw,1.125rem)] text-[#111111] font-bold`}
               >
                 ARC-0925
               </span>
@@ -469,7 +480,7 @@ export default function DatasetSection() {
           </div>
 
           <span
-            className={`${oswaldBold.className} inline-flex justify-center items-center border-2 border-[#7C2121] lg:px-3 lg:py-2 px-1 py-1 text-base md:text-lg lg:text-xl uppercase tracking-wider text-[#7C2121]`}
+            className={`${jockeyOneRegular.className} inline-flex justify-center items-center border-2 border-[#7C2121] lg:px-3 lg:py-2 px-1 py-1 text-base md:text-lg lg:text-xl uppercase tracking-wider text-[#7C2121]`}
           >
             Recording Archive
           </span>
@@ -509,7 +520,7 @@ export default function DatasetSection() {
                           height={112}
                           className="h-20 w-45 shrink-0 drop-shadow-sm"
                         />
-                        <div className={`${jockeyOneRegular.className}text-black text-xl font-bold`}>
+                        <div className={`${jockeyOneRegular.className} text-black text-xl font-bold`}>
                           {stage.number}
                         </div>
                         <span
@@ -613,7 +624,7 @@ export default function DatasetSection() {
                           Side A
                         </span>
                       </div>
-                      <span className={`${oswaldBold.className} text-base uppercase leading-tight ${sleeve.textClass} sm:text-lg lg:text-xl`}>
+                      <span className={`${jockeyOneRegular.className} text-lg uppercase leading-tight ${sleeve.textClass} sm:text-xl lg:text-2xl`}>
                         {sleeve.title}
                       </span>
                       <div className="flex items-end justify-between">
@@ -654,33 +665,33 @@ export default function DatasetSection() {
             >
               <dl className="space-y-2 sm:space-y-3 lg:space-y-4 text-sm">
                 <div>
-                  <dt className={`${oswaldMedium.className} text-base sm:text-lg lg:text-xl uppercase tracking-wide font-bold text-[#111111]`}>
+                  <dt className={`${jockeyOneRegular.className} text-base sm:text-lg lg:text-xl uppercase tracking-wide font-bold text-[#111111]`}>
                     Source
                   </dt>
-                  <dd className={`${poppinsMedium.className} mt-0.5 text-xs sm:text-sm text-[#111111]`}>Genius</dd>
+                  <dd className={`${poppinsMedium.className} mt-0.5 text-base sm:text-lg text-[#111111]`}>Genius</dd>
                 </div>
-                <div className="border-t border-dotted border-[#B8B8B8] pt-2 sm:pt-3 lg:pt-4">
+                <div className="border-t border-dotted border-[#B8B8B8] pt-2 sm:pt-3 lg:pt-3">
                   <dt className={`${oswaldMedium.className} text-base sm:text-lg lg:text-xl uppercase tracking-wide font-bold text-[#111111]`}>
                     Access Date
                   </dt>
-                  <dd className={`${poppinsMedium.className} mt-0.5 text-xs sm:text-sm text-[#111111]`}>29 December 2025</dd>
+                  <dd className={`${poppinsMedium.className} mt-0.5 text-base sm:text-lg text-[#111111]`}>29 December 2025</dd>
                 </div>
-                <div className="border-t border-dotted border-[#B8B8B8] pt-2 sm:pt-3 lg:pt-4">
+                <div className="border-t border-dotted border-[#B8B8B8] pt-2 sm:pt-3 lg:pt-3">
                   <dt className={`${oswaldMedium.className} text-base sm:text-lg lg:text-xl uppercase tracking-wide font-bold text-[#111111]`}>
                     Catalog Note
                   </dt>
-                  <dd className={`${poppinsRegular.className} mt-0.5 text-xs sm:text-sm text-[#111111]`}>
+                  <dd className={`${poppinsRegular.className} mt-0.5 text-base sm:text-lg text-[#111111]`}>
                     Lyrics &amp; Metadata Archive
                   </dd>
                 </div>
-                <div className="border-t border-dotted border-[#B8B8B8] pt-2 sm:pt-3 lg:pt-4">
+                <div className="border-t border-dotted border-[#B8B8B8] pt-2 sm:pt-3 lg:pt-3">
                   <dt className={`${oswaldMedium.className} text-base sm:text-lg lg:text-xl uppercase tracking-wide font-bold text-[#111111]`}>
                     Dataset Version
                   </dt>
-                  <dd className={`${poppinsMedium.className} mt-0.5 text-xs sm:text-sm text-[#111111]`}>v 1.0</dd>
+                  <dd className={`${poppinsMedium.className} mt-0.5 text-base sm:text-lg text-[#111111]`}>v 1.0</dd>
                 </div>
               </dl>
-              <div className="mt-auto flex items-center justify-between gap-2 pt-3 sm:pt-4 lg:pt-6 mb-3 sm:mb-4 lg:mb-6">
+              <div className="mt-auto flex items-center justify-between gap-2 pt-3 sm:pt-3 lg:pt-6 mb-3 sm:mb-4 lg:mb-6">
                 <span className={`${poppinsRegular.className} text-[9px] sm:text-[10px] lg:text-[12px] uppercase tracking-wide text-[#111111] font-bold`}>
                   Log · ARC-001035
                 </span>
@@ -722,20 +733,18 @@ export default function DatasetSection() {
                 type="button"
                 aria-label="Tutup"
                 onClick={() => setPopupIndex(null)}
-                className="group relative h-8 w-8 shrink-0 cursor-pointer"
+                onMouseEnter={() => setClosePressed(true)}
+                onMouseLeave={() => setClosePressed(false)}
+                onTouchStart={() => setClosePressed(true)}
+                onTouchEnd={() => setClosePressed(false)}
+                onTouchCancel={() => setClosePressed(false)}
+                className="relative h-8 w-8 shrink-0 cursor-pointer"
               >
                 <img
-                  src="/popupButtonOff.svg"
+                  src={closePressed ? "/popupButtonOn.svg" : "/popupButtonOff.svg"}
                   alt=""
                   aria-hidden="true"
-                  className="absolute inset-0 h-full w-full select-none transition-opacity duration-200 ease-out group-hover:opacity-0"
-                />
-
-                <img
-                  src="/popupButtonOn.svg"
-                  alt=""
-                  aria-hidden="true"
-                  className="absolute inset-0 h-full w-full select-none opacity-0 transition-opacity duration-200 ease-out group-hover:opacity-100"
+                  className="absolute inset-0 h-full w-full select-none"
                 />
               </button>
             </div>

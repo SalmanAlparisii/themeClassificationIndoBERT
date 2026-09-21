@@ -59,6 +59,14 @@ export default function VinylPlayer({
   type detailKey = "importance" | "researchGap" | null;
   const [activeDetail, setActiveDetail] = useState<detailKey>(null);
 
+  // State untuk feedback "hover jadi klik" di layar kecil: dipicu lewat
+  // onMouseEnter/Leave (hover, layar besar) DAN onTouchStart/End (tap,
+  // layar kecil), bukan lewat CSS :hover/:active saja — supaya perubahan
+  // gambar/tampilan pasti kerender sebelum aksi klik berikutnya terjadi.
+  const [importancePressed, setImportancePressed] = useState(false);
+  const [researchGapPressed, setResearchGapPressed] = useState(false);
+  const [closePressed, setClosePressed] = useState(false);
+
   const [tracks, setTracks] = useState<Track[]>(DEFAULT_TRACKS);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -88,6 +96,15 @@ export default function VinylPlayer({
       document.body.style.overflow = "";
       document.body.style.paddingRight = "";
     }
+
+    // Reset tampilan tombol tutup ke state awal (putih/off) setiap kali
+    // popup berganti (dibuka pertama kali atau pindah ke detail lain).
+    // Tanpa ini, kalau popup sebelumnya ditutup dengan cara meng-klik
+    // tombol tutup itu sendiri, elemen keburu di-unmount sebelum event
+    // mouseleave/touchend sempat jalan, jadi state "pressed"-nya nyangkut
+    // true terus dan tombol tutup di popup berikutnya langsung kelihatan
+    // "hitam" padahal belum disentuh sama sekali.
+    setClosePressed(false);
 
     return () => {
       document.body.style.overflow = "";
@@ -291,9 +308,18 @@ export default function VinylPlayer({
             ))}
           </div>
         </div>
-
+        
         <div className="relative w-full max-w-[500px]">
           <div className="relative rounded-t-2xl border-2 border-black bg-[#F5F5F5] p-2 overflow-visible">
+            <div className="absolute left-3 top-3 z-30">
+              <button
+                type="button"
+                onClick={handleUploadClick}
+                className={`rounded-full border border-black bg-white px-3 py-1 text-xs md:text-sm font-semibold cursor-pointer hover:bg-black hover:text-white active:bg-black active:text-white transition ${poppinsRegular.className}`}
+              >
+                Upload
+              </button>
+            </div>
             <div
               className="absolute right-2 top-0 z-30"
               style={{
@@ -539,7 +565,15 @@ export default function VinylPlayer({
               <div className="mt-1 pt-1 md:pt-2 lg:pt-3">
                 <p className={`text-left text-[10px] sm:text-[11px] md:text-[12px] leading-relaxed ${poppinsRegular.className}`}>
                   {importance.quote} {importance.note}
-                  <button className={`inline-block rounded-lg bg-[#6D84D7] px-2 py-0.5 sm:px-3 sm:py-1 ml-1 text-[11px] sm:text-[13px] md:text-[14px] leading-none align-middle shadow-2xl transition-all duration-200 ease-out hover:-translate-y-0.5 cursor-pointer hover:shadow-4xl border-2 border-transparent hover:border-white ${poppinsRegular.className}`} onClick={() => setActiveDetail("importance")}>
+                  <button
+                    className={`inline-block rounded-lg bg-[#6D84D7] px-2 py-0.5 sm:px-3 sm:py-1 ml-1 text-[11px] sm:text-[13px] md:text-[14px] leading-none align-middle shadow-2xl transition-all duration-200 ease-out cursor-pointer border-2 ${importancePressed ? "-translate-y-0.5 shadow-4xl border-white" : "border-transparent"} ${poppinsRegular.className}`}
+                    onMouseEnter={() => setImportancePressed(true)}
+                    onMouseLeave={() => setImportancePressed(false)}
+                    onTouchStart={() => setImportancePressed(true)}
+                    onTouchEnd={() => setImportancePressed(false)}
+                    onTouchCancel={() => setImportancePressed(false)}
+                    onClick={() => setActiveDetail("importance")}
+                  >
                     {importance.date}
                   </button>
                 </p>
@@ -560,7 +594,15 @@ export default function VinylPlayer({
               <div className="mt-1 pt-1 md:pt-2 lg:pt-3">
                 <p className={`text-left text-[10px] sm:text-[11px] md:text-[12px] leading-relaxed ${poppinsRegular.className}`}>
                   {researchGap.quote} {researchGap.note}
-                  <button className={`inline-block rounded-lg bg-[#7C2121] px-2 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-[13px] md:text-[14px] leading-none align-middle shadow-2xl transition-all duration-200 ease-out hover:-translate-y-0.5 cursor-pointer hover:shadow-4xl border-2 border-transparent hover:border-white ${poppinsRegular.className}`} onClick={() => setActiveDetail("researchGap")}>
+                  <button
+                    className={`inline-block rounded-lg bg-[#7C2121] px-2 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-[13px] md:text-[14px] leading-none align-middle shadow-2xl transition-all duration-200 ease-out cursor-pointer border-2 ${researchGapPressed ? "-translate-y-0.5 shadow-4xl border-white" : "border-transparent"} ${poppinsRegular.className}`}
+                    onMouseEnter={() => setResearchGapPressed(true)}
+                    onMouseLeave={() => setResearchGapPressed(false)}
+                    onTouchStart={() => setResearchGapPressed(true)}
+                    onTouchEnd={() => setResearchGapPressed(false)}
+                    onTouchCancel={() => setResearchGapPressed(false)}
+                    onClick={() => setActiveDetail("researchGap")}
+                  >
                     {researchGap.date}
                   </button>
                 </p>
@@ -608,19 +650,18 @@ export default function VinylPlayer({
               type="button"
               aria-label="Tutup"
               onClick={() => setActiveDetail(null)}
-              className="group absolute right-4 top-4 h-8 w-8 cursor-pointer"
+              onMouseEnter={() => setClosePressed(true)}
+              onMouseLeave={() => setClosePressed(false)}
+              onTouchStart={() => setClosePressed(true)}
+              onTouchEnd={() => setClosePressed(false)}
+              onTouchCancel={() => setClosePressed(false)}
+              className="absolute right-4 top-4 h-8 w-8 cursor-pointer"
             >
               <img
-                src="/popupButtonOff.svg"
+                src={closePressed ? "/popupButtonOn.svg" : "/popupButtonOff.svg"}
                 alt=""
                 aria-hidden="true"
-                className="absolute inset-0 h-full w-full select-none transition-opacity duration-200 ease-out group-hover:opacity-0"
-              />
-              <img
-                src="/popupButtonOn.svg"
-                alt=""
-                aria-hidden="true"
-                className="absolute inset-0 h-full w-full select-none opacity-0 transition-opacity duration-200 ease-out group-hover:opacity-100"
+                className="absolute inset-0 h-full w-full select-none"
               />
             </button>
 

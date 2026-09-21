@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { jockeyOneRegular, ppEditorialNew } from "@/app/layout";
@@ -37,9 +38,15 @@ function Navbar() {
         </button>
 
         <nav className="hidden lg:flex items-center gap-6 text-2xl ml-12">
-          {menus.map((menu) => (
-            <button key={menu.id} onClick= {()=> scrollToSection(menu.id)} className="hover:text-red-500 transition-colors cursor-pointer">{menu.name}</button>
-          ))}
+          {menus.map((menu) =>
+            menu.id === "try-model" ? (
+              <Link key={menu.id} href="/classify" className="hover:text-red-500 transition-colors">
+                {menu.name}
+              </Link>
+            ) : (
+              <button key={menu.id} onClick= {()=> scrollToSection(menu.id)} className="hover:text-red-500 transition-colors cursor-pointer">{menu.name}</button>
+            )
+          )}
         </nav>
 
         <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden mx-4">
@@ -51,7 +58,11 @@ function Navbar() {
         <nav className={`absolute top-full left-0 right-0 z-50 flex flex-col gap-1 bg-white border border-black/10 rounded-b-xl shadow-lg px-5 py-5 text-lg lg:hidden ${jockeyOneRegular.className}`}>
           {menus.map((menu) => (
             <div key={menu.id} className="group rounded-lg px-3 py-2 transition-shadow duration-200 hover:shadow-md active:shadow-md">
-              <button onClick={()=> scrollToSection(menu.id)} className="transition-colors group-hover:text-red-500 group-active:text-red-500">{menu.name}</button>
+              {menu.id === "try-model" ? (
+                <Link href="/classify" className="transition-colors group-hover:text-red-500 group-active:text-red-500">{menu.name}</Link>
+              ) : (
+                <button onClick={()=> scrollToSection(menu.id)} className="transition-colors group-hover:text-red-500 group-active:text-red-500">{menu.name}</button>
+              )}
             </div>
           ))}
         </nav>

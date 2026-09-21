@@ -8,6 +8,7 @@ import { poppinsExtraLightItalic } from "./layout";
 import ResearchSection from "@/components/researchSection";
 import DatasetSection from "@/components/datasetSection";
 import CableFeed from "@/components/cableFeed";
+import StartNowButton from "@/components/ui/startNowButton";
 
 export default function Home() {
   return (
@@ -34,16 +35,12 @@ export default function Home() {
         </h1>
       </div>
 
-      <div className="relative z-5 mt-3 mx-4 md:mx-10 lg:pr-[540px] flex flex-row lg:flex-col items-start justify-center lg:justify-start gap-8 sm:gap-12 md:gap-16 lg:gap-2">
+      <div className="relative z-5 mt-3 mx-4 md:mx-10 lg:pr-[540px] flex flex-row lg:flex-col items-center lg:items-start justify-center lg:justify-start gap-8 sm:gap-12 md:gap-16 lg:gap-2">
         <div className="flex flex-col items-center lg:gap-2">
           <h1 className={`${oswaldMedium.className} text-lg sm:text-2xl md:text-2xl lg:text-3xl font-bold text-center lg:mb-2`}>
             Dont Forget to Try
           </h1>
-          <div className="rounded-3xl lg:rounded-4xl bg-black text-white text-center cursor-pointer border-black hover:bg-red-500 hover:transition-all hover:text-white hover:shadow-lg mt-1.5">
-            <button className={`${jockeyOneRegular.className} text-base sm:text-xl md:text-xl lg:text-2xl font-bold px-6 py-2 lg:px-8 lg:py-3 cursor-pointer`}>
-              Start Now
-            </button>
-          </div>
+          <StartNowButton />
         </div>
 
         <div className="flex flex-col items-center gap-1">
