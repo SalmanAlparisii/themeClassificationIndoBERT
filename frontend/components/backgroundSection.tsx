@@ -87,9 +87,6 @@ export default function BackgroundSection() {
           const r = el.getBoundingClientRect();
           return viewportXToCableX(r.left + r.width / 2, cableLayout);
         };
-        // Di md ke bawah, paksa titik mulai kabel ke X yang PERSIS SAMA dengan
-        // CABLE_END_X (titik yang juga dipakai CableFeed untuk stub di atas),
-        // supaya sambungannya lurus & konsisten, tanpa belokan internal lagi.
         const next =
           cableLayout.bp === "lg"
             ? { red: toX(redOutlet), blue: toX(blueOutlet) }

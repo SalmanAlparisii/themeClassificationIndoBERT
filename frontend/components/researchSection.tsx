@@ -8,6 +8,7 @@ import {
   oswaldBold,
   jockeyOneRegular,
   poppinsRegular,
+  poppinsMedium,
 } from "@/app/layout";
 import { SOCKET_HEIGHT_RATIO, useCableLayout } from "@/lib/cableGeometry";
 
@@ -18,12 +19,15 @@ interface ResearchSection {
   serial: string;
   label: string;
   color: LabelColor;
+  image: string;
+  quote: string;
+  name: string;
 }
 
 const sections: ResearchSection[] = [
-  { id: "gap", serial: "01", label: "Research Gap", color: "green" },
-  { id: "indobert", serial: "02", label: "Why IndoBERT", color: "gray" },
-  { id: "theme", serial: "03", label: "Why Theme Classification", color: "red" },
+  { id: "gap", serial: "01", label: "Research Gap", color: "green", image: "/zoraNealeHurston.webp", quote: "Research is formalized curiosity. It is poking and prying with a purpose", name: "Zora Neale Hurston"},
+  { id: "indobert", serial: "02", label: "Why IndoBERT", color: "gray", image: "/noamChomsky.webp", quote: "The principles that determine the form and meaning of sentences", name: "Noam Chomsky"},
+  { id: "theme", serial: "03", label: "Why Theme Classification", color: "red", image:"/leonardoBernstein.webp", quote: "Music can name the unnameable and communicate the unknowable", name: "Leonardo Bernstein"},
 ];
 
 const colorStyles: Record<LabelColor, { bg: string; text: string }> = {
@@ -162,22 +166,17 @@ function MarqueeBanner({ plugged: pluggedProp }: MarqueeBannerProps) {
 
   useEffect(() => {
     if (!plugged) return;
-    // scale/opacity settle di 0.28s, tapi borderColor masih jalan sampai 1s.
-    // onAnimationComplete nunggu SEMUA properti selesai (1s) baru remeasure,
-    // jadi kelihatan lambat. Ukur ulang lebih awal begitu scale sudah settle.
     const t = window.setTimeout(() => setSocketRemeasure((n) => n + 1), 320);
     return () => window.clearTimeout(t);
   }, [plugged]);
 
   const item = (
     <span className="mx-2 flex shrink-0 items-center gap-2 rounded-md px-3 py-2 sm:gap-2.5 sm:px-4 sm:py-2.5 md:gap-3 md:px-5 md:py-3 lg:px-6 lg:py-3.5">
-      <span className="h-2.5 w-2.5 shrink-0 border-2 border-white sm:h-3 sm:w-3 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" aria-hidden="true" />
       <span
         className={`${oswaldBold.className} text-2xl uppercase text-white sm:text-2xl md:text-3xl lg:text-4xl`}
       >
         Beyond Genre, Find The Theme
       </span>
-      <ReelDot />
     </span>
   );
 
@@ -335,7 +334,7 @@ function TapeLabel({ label, serial, color, isOpen, onToggle, children }: TapeLab
             <img
               src={isOpen ? "/buttonOn.svg" : "/buttonOff.svg"}
               alt=""
-              className="h-6 w-6"
+              className="h-6 w-6 cursor-pointer"
             />
           </span>
         </span>
@@ -386,7 +385,6 @@ function ResearchAccordion() {
               penelitian ini.
             </p>
           )}
-
           {section.id === "indobert" && (
             <p className={`${poppinsRegular.className} mx-auto text-center text-[14px] text-black/80 md:text-base mb-2 lg:text-base`}>
               IndoBERT dipilih karena mampu memahami konteks bahasa Indonesia
@@ -427,6 +425,20 @@ function ResearchAccordion() {
                 className="h-8 w-8 md:h-12 md:w-12"
               />
             </button>
+          </div>
+
+          <div className="pointer-events-none absolute left-1/2 top-1/2 flex items-center -translate-x-1/2 translate-y-10 justify-center md:translate-y-14 gap-2 -ml-2">
+            <img
+              src={section.image}
+              alt={section.label}
+              className="pointer-events-auto h-20 w-20 rounded-xl object-cover md:h-36 md:w-36"
+            />
+            <div className={`flex flex-col tracking-tight items-center text-center text-base gap-3 ${poppinsRegular.className}`}>
+              "{section.quote}"
+              <p className={`font-bold tracking-tight text-xl ${poppinsMedium.className}`}>
+                {section.name}
+              </p>
+            </div>
           </div>
         </TapeLabel>
       ))}

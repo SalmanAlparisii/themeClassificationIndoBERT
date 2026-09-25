@@ -411,11 +411,6 @@ function TapeLabelStrip({ data, dark = false }: { data: TapeLabelData; dark?: bo
 
 export default function DatasetSection() {
   const [popupIndex, setPopupIndex] = useState<number | null>(null);
-
-  // Sama seperti di VinylPlayer: tombol tutup popup ini dikontrol lewat
-  // state React (bukan CSS :hover/:active saja) supaya feedback visualnya
-  // pasti kerender di layar sentuh, dan di-reset tiap popup berganti biar
-  // tidak nyangkut di tampilan "pressed" dari interaksi sebelumnya.
   const [closePressed, setClosePressed] = useState(false);
 
   useEffect(() => {
@@ -552,6 +547,7 @@ export default function DatasetSection() {
                             bg-transparent
                             p-0
                             border-0
+                            -mt-4
                           "
                         >
                           <Image
@@ -616,7 +612,7 @@ export default function DatasetSection() {
                           <span className={`${oswaldMedium.className} block text-[10px] font-bold uppercase tracking-wide ${sleeve.textClass} sm:text-xs`}>
                             Theme Archive
                           </span>
-                          <span className={`${poppinsMedium.className} mt-0.5 hidden text-[10px] font-bold uppercase tracking-wide ${sleeve.textClass} sm:block`}>
+                          <span className={`${poppinsMedium.className} mt-0.5 hidden text-[10px] uppercase tracking-wide ${sleeve.textClass} sm:block`}>
                             Cat DS2025 · Master
                           </span>
                         </div>
@@ -671,13 +667,13 @@ export default function DatasetSection() {
                   <dd className={`${poppinsMedium.className} mt-0.5 text-base sm:text-lg text-[#111111]`}>Genius</dd>
                 </div>
                 <div className="border-t border-dotted border-[#B8B8B8] pt-2 sm:pt-3 lg:pt-3">
-                  <dt className={`${oswaldMedium.className} text-base sm:text-lg lg:text-xl uppercase tracking-wide font-bold text-[#111111]`}>
+                  <dt className={`${jockeyOneRegular.className} text-base sm:text-lg lg:text-xl uppercase tracking-wide font-bold text-[#111111]`}>
                     Access Date
                   </dt>
                   <dd className={`${poppinsMedium.className} mt-0.5 text-base sm:text-lg text-[#111111]`}>29 December 2025</dd>
                 </div>
                 <div className="border-t border-dotted border-[#B8B8B8] pt-2 sm:pt-3 lg:pt-3">
-                  <dt className={`${oswaldMedium.className} text-base sm:text-lg lg:text-xl uppercase tracking-wide font-bold text-[#111111]`}>
+                  <dt className={`${jockeyOneRegular.className} text-base sm:text-lg lg:text-xl uppercase tracking-wide font-bold text-[#111111]`}>
                     Catalog Note
                   </dt>
                   <dd className={`${poppinsRegular.className} mt-0.5 text-base sm:text-lg text-[#111111]`}>
@@ -685,7 +681,7 @@ export default function DatasetSection() {
                   </dd>
                 </div>
                 <div className="border-t border-dotted border-[#B8B8B8] pt-2 sm:pt-3 lg:pt-3">
-                  <dt className={`${oswaldMedium.className} text-base sm:text-lg lg:text-xl uppercase tracking-wide font-bold text-[#111111]`}>
+                  <dt className={`${jockeyOneRegular.className} text-base sm:text-lg lg:text-xl uppercase tracking-wide font-bold text-[#111111]`}>
                     Dataset Version
                   </dt>
                   <dd className={`${poppinsMedium.className} mt-0.5 text-base sm:text-lg text-[#111111]`}>v 1.0</dd>
