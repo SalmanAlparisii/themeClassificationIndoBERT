@@ -431,11 +431,11 @@ function ResearchAccordion() {
             <img
               src={section.image}
               alt={section.label}
-              className="pointer-events-auto h-20 w-20 rounded-xl object-cover md:h-36 md:w-36"
+              className="pointer-events-auto h-30 w-30 rounded-xl object-cover md:h-36 md:w-36"
             />
-            <div className={`flex flex-col tracking-tight items-center text-center text-base gap-3 ${poppinsRegular.className}`}>
+            <div className={`flex flex-col tracking-tight items-center text-center lg:text-base text-xs md:text-sm lg:gap-3 gap:1 sm:-mt-1 ${poppinsRegular.className}`}>
               "{section.quote}"
-              <p className={`font-bold tracking-tight text-xl ${poppinsMedium.className}`}>
+              <p className={`font-bold tracking-tight lg:text-xl md:text-base text-sm ${poppinsMedium.className}`}>
                 {section.name}
               </p>
             </div>

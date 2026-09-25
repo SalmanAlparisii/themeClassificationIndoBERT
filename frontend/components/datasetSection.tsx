@@ -664,19 +664,19 @@ export default function DatasetSection() {
                   <dt className={`${jockeyOneRegular.className} text-base sm:text-lg lg:text-xl uppercase tracking-wide font-bold text-[#111111]`}>
                     Source
                   </dt>
-                  <dd className={`${poppinsMedium.className} mt-0.5 text-base sm:text-lg text-[#111111]`}>Genius</dd>
+                  <dd className={`${poppinsMedium.className} mt-0.5 text-base sm:text-[16px] text-[#111111]`}>Genius</dd>
                 </div>
                 <div className="border-t border-dotted border-[#B8B8B8] pt-2 sm:pt-3 lg:pt-3">
                   <dt className={`${jockeyOneRegular.className} text-base sm:text-lg lg:text-xl uppercase tracking-wide font-bold text-[#111111]`}>
                     Access Date
                   </dt>
-                  <dd className={`${poppinsMedium.className} mt-0.5 text-base sm:text-lg text-[#111111]`}>29 December 2025</dd>
+                  <dd className={`${poppinsMedium.className} mt-0.5 text-base sm:text-[16px] text-[#111111]`}>29 December 2025</dd>
                 </div>
                 <div className="border-t border-dotted border-[#B8B8B8] pt-2 sm:pt-3 lg:pt-3">
                   <dt className={`${jockeyOneRegular.className} text-base sm:text-lg lg:text-xl uppercase tracking-wide font-bold text-[#111111]`}>
                     Catalog Note
                   </dt>
-                  <dd className={`${poppinsRegular.className} mt-0.5 text-base sm:text-lg text-[#111111]`}>
+                  <dd className={`${poppinsMedium.className} mt-0.5 text-base sm:text-[16px] text-[#111111]`}>
                     Lyrics &amp; Metadata Archive
                   </dd>
                 </div>
@@ -684,11 +684,11 @@ export default function DatasetSection() {
                   <dt className={`${jockeyOneRegular.className} text-base sm:text-lg lg:text-xl uppercase tracking-wide font-bold text-[#111111]`}>
                     Dataset Version
                   </dt>
-                  <dd className={`${poppinsMedium.className} mt-0.5 text-base sm:text-lg text-[#111111]`}>v 1.0</dd>
+                  <dd className={`${poppinsMedium.className} mt-0.5 text-base sm:text-[16px] text-[#111111]`}>v 1.0</dd>
                 </div>
               </dl>
               <div className="mt-auto flex items-center justify-between gap-2 pt-3 sm:pt-3 lg:pt-6 mb-3 sm:mb-4 lg:mb-6">
-                <span className={`${poppinsRegular.className} text-[9px] sm:text-[10px] lg:text-[12px] uppercase tracking-wide text-[#111111] font-bold`}>
+                <span className={`${poppinsMedium.className} text-[9px] sm:text-[10px] lg:text-[12px] uppercase tracking-wide text-[#111111] font-bold`}>
                   Log · ARC-001035
                 </span>
                 <span
